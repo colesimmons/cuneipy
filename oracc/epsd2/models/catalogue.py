@@ -75,6 +75,12 @@ class _CatalogueItem(BaseModel):
         description="Additional remarks about the author or item",
         example="Chicago Stone. Isin",
     )
+    bdtns_id: str = Field(
+        "",
+        alias="bdtns_id",
+        description="BDTNS ID",
+        example="015800",
+    )
     bibliography__book_title: str = Field(
         "",
         alias="bibliography__book_title",
@@ -239,6 +245,12 @@ class _CatalogueItem(BaseModel):
         alias="designation",
         description="Designation or label for the item",
         example="OECT 07, 013",
+    )
+    distribution: str = Field(
+        "",
+        alias="distribution",
+        description="Provenance distribution",
+        example="Nippur [144], uncertain [1]",
     )
     dumb: str = Field(
         "",
@@ -570,6 +582,12 @@ class _CatalogueItem(BaseModel):
         alias="provenience",
         description="Provenience of the object",
         example="Kish (mod. Tell Uhaimir)",
+    )
+    provenience_distribution: str = Field(
+        "",
+        alias="provdist",
+        description="Provenance distribution",
+        example="Nippur [144], uncertain [1]",
     )
     provenience_remarks: str = Field(
         "",

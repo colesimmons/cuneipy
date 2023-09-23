@@ -1,6 +1,6 @@
 """
 """
-from typing import Dict, List, ForwardRef
+from typing import Dict, List
 from pydantic import Field
 from oracc.epsd2.models.utils import BaseModel, OraccFileBase
 from oracc.epsd2.utils import load_json
@@ -17,9 +17,6 @@ class _Modifier(BaseModel):
     a: str = Field("", alias="a", description="", example="a")
 
 
-_Sequence = ForwardRef("_Sequence")
-
-
 class _Sequence(BaseModel):
     """
     Lorem ipsum
@@ -30,15 +27,12 @@ class _Sequence(BaseModel):
     o: str = Field("", alias="o", description="Operator types", example="beside")
     form: str = Field("", alias="form", description="", example="MU\u0160\u2083@g")
     mods: List[_Modifier] = Field([], alias="mods", description="", example=[])
-    m: str = Field("", alias="", description="m", example="l")
-    n: str = Field("", alias="", description="n", example="n")
-    r: str = Field("", alias="", description="r", example="9")
-    seq: List[_Sequence] = Field(
+    m: str = Field("", alias="m", description="m", example="l")
+    n: str = Field("", alias="n", description="n", example="n")
+    r: str = Field("", alias="r", description="r", example="9")
+    seq: List["_Sequence"] = Field(
         [], alias="seq", description="", example=[{"s": "GI\u0160", "o": "beside"}]
     )
-
-
-_Sequence.update_forward_refs()
 
 
 class _GDL(BaseModel):

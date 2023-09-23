@@ -41,7 +41,7 @@ class Form(BaseModel):
         description="Extended identifier string",
         example="sux.r000005",
     )
-    _type: str = Field(..., alias="type", description="", example="form")
+    type: str = Field(..., alias="type", description="", example="form")
 
 
 class NormForm(BaseModel):
@@ -63,7 +63,7 @@ class NormForm(BaseModel):
         example="o0031651.42",
     )
     ref: str = Field(..., alias="ref", description="Reference ID", example="o0031651.0")
-    _type: str = Field(..., alias="type", description="", example="normform")
+    type: str = Field(..., alias="type", description="", example="normform")
     xis: str = Field(
         ...,
         alias="xis",
@@ -151,7 +151,7 @@ class GlossaryBase(BaseModel):
         description="Extended identifier string",
         example="sux.r00f22e",
     )
-    _type: str = Field(
+    type: str = Field(
         ..., alias="type", description="The type of glossary entry", example="base"
     )
 
@@ -190,7 +190,7 @@ class Cont(BaseModel):
         description="Extended identifier string",
         example="sux.r00f230",
     )
-    _type: str = Field(
+    type: str = Field(
         ..., alias="type", description="The type of entry", example="cont"
     )
 
@@ -227,7 +227,7 @@ class Morph(BaseModel):
         description="Extended identifier string",
         example="sux.r00f21c",
     )
-    _type: str = Field(
+    type: str = Field(
         ..., alias="type", description="The type of entry", example="morph"
     )
 
@@ -264,7 +264,7 @@ class Prefix(BaseModel):
         description="Extended identifier string",
         example="sux.r000009",
     )
-    _type: str = Field(
+    type: str = Field(
         ..., alias="type", description="The type of entry", example="prefix"
     )
 
@@ -303,7 +303,7 @@ class FormSans(BaseModel):
         description="Extended identifier string",
         example="sux.r000005",
     )
-    _type: str = Field(
+    type: str = Field(
         ..., alias="type", description="The type of entry", example="form-sans"
     )
 
@@ -338,7 +338,7 @@ class Signature(BaseModel):
         description="Signature string",
         example="@epsd2%sux:zu-zu=Zuzu[1//1]PN'PN$Zuzu/zu-zu#~",
     )
-    cof_data: CofData = Field(None, alias="cof_data", description="CofData object")
+    cof_data: CofData = Field(None, alias="cof-data", description="CofData object")
 
     # Occurrence data
     count: int = Field(..., alias="icount", description="Instance count", example=4)
@@ -356,7 +356,7 @@ class Signature(BaseModel):
         description="Extended identifier string",
         example="sux.r002bb1",
     )
-    _type: str = Field(..., alias="type", description="Type of entry", example="sig")
+    type: str = Field(..., alias="type", description="Type of entry", example="sig")
 
 
 class Sense(BaseModel):
@@ -370,7 +370,7 @@ class Sense(BaseModel):
     conts: List[Cont] = Field([], alias="conts", description="List of Cont objects")
     forms: List[Form] = Field(..., alias="forms", description="List of Form objects")
     form_sans: List[FormSans] = Field(
-        ..., alias="form_sans", description="List of FormSans objects"
+        ..., alias="form-sanss", description="List of FormSans objects"
     )
     mng: str = Field("", alias="mng", description="Meaning", example="way, road")
     morphs: List[Morph] = Field(
@@ -406,13 +406,14 @@ class Sense(BaseModel):
     cbd_id: str = Field(
         "", alias="cbd_id", description="Canonical ID", example="sux.x0974361"
     )
+    oid: str = Field("", alias="oid", description="Oracc ID?", example="o0002866")
     xis: str = Field(
         ...,
         alias="xis",
         description="Extended identifier string",
         example="sux.r00f237",
     )
-    _type: str = Field(..., alias="type", description="Type of entry", example="sense")
+    type: str = Field(..., alias="type", description="Type of entry", example="sense")
 
 
 class Period(BaseModel):
@@ -458,7 +459,38 @@ class Compound(BaseModel):
         "", alias="primary", description="Primary identifier", example="1"
     )
     ref: str = Field(..., alias="ref", description="Reference", example="o0043041")
-    _type: str = Field("", alias="type", description="Type of entry", example="cpd")
+    type: str = Field("", alias="type", description="Type of entry", example="cpd")
+
+
+class SeeCompound(BaseModel):
+    """
+    Lorem ipsum
+    """
+
+    xcpd: str = Field(
+        ..., alias="xcpd", description="", example="zurzar za[make noise]V/t"
+    )
+    eref: str = Field(..., alias="eref", description="", example="o0043043")
+
+
+class Bibliography(BaseModel):
+    """
+    Lorem ipsum
+    """
+
+    ref: str = Field(
+        ..., alias="ref", description="Reference", example="H. Waetzoldt, UNT 11-12."
+    )
+    year: str = Field(..., alias="year", description="Year", example="1972")
+
+
+class Equivalency(BaseModel):
+    """
+    Lorem ipsum
+    """
+
+    equiv: str = Field(..., alias="equiv", description="Equivalent to", example="rimmu")
+    lang: str = Field(..., alias="lang", description="Language", example="akk")
 
 
 class GlossaryItem(BaseModel):
@@ -472,12 +504,17 @@ class GlossaryItem(BaseModel):
     bases: List[GlossaryBase] = Field(
         "", alias="bases", description="List of GlossaryBase objects"
     )
+    bib: List[Bibliography] = Field([], alias="bib", description="Bibliography")
     cf: str = Field(..., alias="cf", description="Citation form", example="kaskal")
     compound: List[Compound] = Field(
         [], alias="compound", description="List of Compound objects"
     )
     conts: List[Cont] = Field(..., alias="conts", description="List of Cont objects")
+    equivalencies: List[Equivalency] = Field(
+        [], alias="equivs", description="List of equivalent items in other languages"
+    )
     forms: List[Form] = Field(..., alias="forms", description="List of Form objects")
+    form_sans: List[FormSans] = Field(..., alias="form-sanss", description="")
     gw: str = Field("", alias="gw", description="Guide word", example="way")
     headword: str = Field(
         ..., alias="headword", description="Headword", example="kaskal[way]N"
@@ -497,6 +534,7 @@ class GlossaryItem(BaseModel):
         ..., alias="prefixs", description="List of Prefix objects"
     )
     rws: str = Field("", alias="rws", description="RWS", example="ES")
+    see_compounds: List[SeeCompound] = Field([], alias="see-compounds", description="")
     senses: List[Sense] = Field(
         ..., alias="senses", description="List of Sense objects"
     )
@@ -518,6 +556,7 @@ class GlossaryItem(BaseModel):
     oracc_id: str = Field(
         "", alias="oracc_id", description="Oracc ID", example="o0031651"
     )
+    oid: str = Field("", alias="oid", description="Oracc ID?", example="o0031651")
     xis: str = Field(
         ...,
         alias="xis",
@@ -531,14 +570,14 @@ class Glossary(OraccFileBase):
     Lorem ipsum
     """
 
-    lang: str = Field("", alias="", description="", example="sux")
-    entries: List[GlossaryItem] = Field("", alias="", description="", example=[])
+    lang: str = Field("", alias="lang", description="", example="sux")
+    entries: List[GlossaryItem] = Field("", alias="entries", description="", example=[])
     instances: Dict[str, List[str]] = Field(
-        "", alias="", description="sux-id -> list", example=[]
+        "", alias="instances", description="sux-id -> list", example=[]
     )
     summaries: Dict[str, str] = Field(
         "",
-        alias="",
+        alias="summaries",
         description="o/x-id -> summary",
         example={
             "o0023086": '<p class="summary" id="o0023086"><span class="summary"><span class="summary-headword">...'

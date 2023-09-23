@@ -31,7 +31,7 @@ class Config(BaseModel):
         ..., alias="pathname", description="Path name", example="epsd2"
     )
     project_type: str = Field(
-        ..., alias="project_type", description="Type of the project", example="superglo"
+        ..., alias="project-type", description="Type of the project", example="superglo"
     )
     public: str = Field(
         ..., alias="public", description="Public availability status", example=""

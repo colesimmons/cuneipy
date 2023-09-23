@@ -11,13 +11,13 @@ class Sortvals(BaseModel):
     Lorem ipsum
     """
 
-    genres: Dict[str, int] = Field(..., alias="genre", description="", example={})
+    genres: Dict[str, int] = Field(..., alias="genres", description="", example={})
     periods: Dict[str, int] = Field(..., alias="periods", description="", example={})
     places: Dict[str, int] = Field(..., alias="places", description="", example={})
     rulers: Dict[str, int] = Field(..., alias="rulers", description="", example={})
     sessions: Dict[str, int] = Field(..., alias="sessions", description="", example={})
     subgenre_remarks: Dict[str, int] = Field(
-        ..., alias="subgenre_remarks", description="", example={}
+        {}, alias="subgenre_remarks", description="", example={}
     )
     subgenres: Dict[str, int] = Field(
         ..., alias="subgenres", description="", example={}
@@ -37,7 +37,7 @@ class Sortcodes(BaseModel):
     @classmethod
     def load(cls) -> "Sortcodes":
         """Loads the JSON data and instantiates the class."""
-        data = load_json("epsd2-sortcodes.json")
+        data = load_json("sortcodes.json")
         return cls(**data)
 
 
