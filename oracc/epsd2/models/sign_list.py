@@ -2,7 +2,8 @@
 """
 from typing import Dict, List, ForwardRef
 from pydantic import Field
-from oracc.epsd2.models.shared import BaseModel, OraccFileBase
+from oracc.epsd2.models.utils import BaseModel, OraccFileBase
+from oracc.epsd2.utils import load_json
 
 
 class _Modifier(BaseModel):
@@ -74,6 +75,12 @@ class SignList(OraccFileBase):
 
     index: Dict[str, str] = Field(..., description="", example={"am₃": "|A.AN|"})
     signs: Dict[str, _Sign] = Field(..., description="", example={})
+
+    @classmethod
+    def load(cls) -> "SignList":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("epsd2-sl.json")
+        return cls(**data)
 
 
 __all__ = ["SignList"]

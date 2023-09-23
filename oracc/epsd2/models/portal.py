@@ -2,7 +2,8 @@
 """
 from typing import List
 from pydantic import Field
-from oracc.epsd2.models.shared import BaseModel, OraccFileBase
+from oracc.epsd2.models.utils import BaseModel, OraccFileBase
+from oracc.epsd2.utils import load_json
 
 
 class Chunk(BaseModel):
@@ -21,6 +22,12 @@ class Portal(OraccFileBase):
     """
 
     chunks: List[Chunk] = Field(..., description="", example=[])
+
+    @classmethod
+    def load(cls) -> "Portal":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("epsd2-portal.json")
+        return cls(**data)
 
 
 __all__ = ["Portal"]

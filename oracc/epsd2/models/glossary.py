@@ -2,7 +2,8 @@
 """
 from typing import Dict, List
 from pydantic import Field
-from oracc.epsd2.models.shared import BaseModel, OraccFileBase
+from oracc.epsd2.models.utils import BaseModel, OraccFileBase
+from oracc.epsd2.utils import load_json
 
 
 class Form(BaseModel):
@@ -252,6 +253,12 @@ class Glossary(OraccFileBase):
             "o0023086": '<p class="summary" id="o0023086"><span class="summary"><span class="summary-headword">...'
         },
     )
+
+    @classmethod
+    def load(cls) -> "Glossary":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("gloss-sux.json")
+        return cls(**data)
 
 
 __all__ = ["Glossary"]

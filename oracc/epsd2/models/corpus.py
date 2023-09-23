@@ -2,7 +2,7 @@
 """
 from typing import Dict
 from pydantic import Field
-from oracc.epsd2.models.shared import OraccFileBase
+from oracc.epsd2.models.utils import OraccFileBase
 from oracc.epsd2.utils import load_json
 
 

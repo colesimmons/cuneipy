@@ -2,7 +2,8 @@
 """
 from typing import Dict
 from pydantic import Field
-from oracc.epsd2.models.shared import BaseModel
+from oracc.epsd2.models.utils import BaseModel
+from oracc.epsd2.utils import load_json
 
 
 class Sortvals(BaseModel):
@@ -26,6 +27,12 @@ class Sortcodes(BaseModel):
     """
 
     sortvals: Sortvals = Field(..., description="", example={})
+
+    @classmethod
+    def load(cls) -> "Sortcodes":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("epsd2-sortcodes.json")
+        return cls(**data)
 
 
 __all__ = ["Sortcodes"]

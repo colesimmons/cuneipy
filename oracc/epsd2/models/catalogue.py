@@ -2,7 +2,8 @@
 """
 from typing import Dict, List
 from pydantic import Field
-from oracc.epsd2.models.shared import BaseModel, OraccFileBase
+from oracc.epsd2.models.utils import BaseModel, OraccFileBase
+from oracc.epsd2.utils import load_json
 
 
 class _CatalogueItem(BaseModel):
@@ -231,6 +232,12 @@ class Catalogue(OraccFileBase):
 
     members: Dict[str, _CatalogueItem] = Field(..., description="", example={})
     summaries: Dict[str, str] = Field(..., description="", example={})
+
+    @classmethod
+    def load(cls) -> "Catalogue":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("catalogue.json")
+        return cls(**data)
 
 
 __all__ = ["Catalogue"]

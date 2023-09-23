@@ -2,7 +2,8 @@
 """
 from typing import Dict, List
 from pydantic import Field
-from oracc.epsd2.models.shared import BaseModel, OraccFileBase
+from oracc.epsd2.models.utils import BaseModel, OraccFileBase
+from oracc.epsd2.utils import load_json
 
 
 ####################
@@ -41,6 +42,12 @@ class IndexCat(OraccFileBase):
     keys: List[_IndexKey] = Field(..., description="", example=[])
     map: Dict[str, str] = Field(..., description="", example={})
 
+    @classmethod
+    def load(cls) -> "IndexCat":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("index-cat.json")
+        return cls(**data)
+
 
 ####################
 # index-lem.json
@@ -54,6 +61,12 @@ class IndexLem(OraccFileBase):
     keys: List[_IndexKey] = Field(..., description="", example=[])
     map: Dict[str, str] = Field(..., description="", example={})
 
+    @classmethod
+    def load(cls) -> "IndexLem":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("index-lem.json")
+        return cls(**data)
+
 
 ####################
 # index-sux.json
@@ -66,6 +79,12 @@ class IndexSux(OraccFileBase):
     name: str = Field(..., description="", example="sux")
     keys: List[_IndexKey] = Field(..., description="", example=[])
     map: Dict[str, str] = Field(..., description="", example={})
+
+    @classmethod
+    def load(cls) -> "IndexSux":
+        """Loads the JSON data and instantiates the class."""
+        data = load_json("index-sux.json")
+        return cls(**data)
 
 
 __all__ = ["IndexCat", "IndexSux", "IndexLem"]
