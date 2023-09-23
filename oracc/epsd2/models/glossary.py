@@ -8,60 +8,152 @@ from oracc.epsd2.utils import load_json
 
 class Form(BaseModel):
     """
-    Lorem ipsum
+    Represents a form of a word or term.
     """
 
-    type: str = Field(..., description="", example="form")
-    cbd_id: str = Field("", description="", example="o0031651.0")
-    id: str = Field("", description="", example="o0031651.0")
-    n: str = Field(..., description="", example="kas-kal")
-    c: int = Field("", description="", example=49745)
-    icount: int = Field(..., description="", example=0)
-    ipct: int = Field(..., description="", example=0)
-    xis: str = Field(..., description="", example="sux.r000005")
-    ref: str = Field("", description="", example="o0048612.0")
-    rws: str = Field("", description="", example="ES")
+    c: int = Field("", alias="c", description="", example=49745)
+    n: str = Field(..., alias="n", description="", example="kas-kal")
+    rws: str = Field("", alias="rws", description="", example="ES")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=0)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the form",
+        example="o0031651.0",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Unique identifier for the form",
+        example="o0031651.0",
+    )
+    ref: str = Field("", alias="ref", description="Reference ID", example="o0048612.0")
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r000005",
+    )
+    _type: str = Field(..., alias="type", description="", example="form")
 
 
 class NormForm(BaseModel):
     """
-    Lorem ipsum
+    Represents a normalized form of a word or term.
     """
 
-    type: str = Field(..., description="", example="normform")
-    cbd_id: str = Field(..., description="", example="o0031651.42")
-    ref: str = Field(..., description="", example="o0031651.0")
-    icount: int = Field(..., description="", example=0)
-    ipct: int = Field(..., description="", example=0)
-    xis: str = Field(..., description="", example="sux.r000005")
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=0)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    cbd_id: str = Field(
+        ...,
+        alias="cbd_id",
+        description="Canonical ID for the normalized form",
+        example="o0031651.42",
+    )
+    ref: str = Field(..., alias="ref", description="Reference ID", example="o0031651.0")
+    _type: str = Field(..., alias="type", description="", example="normform")
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r000005",
+    )
 
 
 class Norm(BaseModel):
     """
-    Lorem ipsum
+    Represents a normalized word or term.
     """
 
-    cbd_id: str = Field("", description="", example="o0031651.41")
-    id: str = Field("", description="", example="o0031651.41")
-    icount: int = Field(..., description="", example=366)
-    ipct: int = Field(..., description="", example=27)
-    xis: str = Field(..., description="", example="sux.r00f228")
-    n: str = Field(..., description="", example="kaskal")
-    forms: List[NormForm] = Field([], description="", example=[])
+    forms: List[NormForm] = Field(
+        [], alias="forms", description="List of normalized forms", example=[]
+    )
+    n: str = Field(
+        ...,
+        alias="n",
+        description="Name or label of the normalized word",
+        example="kaskal",
+    )
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=366)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=27
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the normalized word",
+        example="o0031651.41",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the normalized word",
+        example="o0031651.41",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f228",
+    )
 
 
 class GlossaryBase(BaseModel):
     """
-    Lorem ipsum
+    Represents a base glossary entry.
     """
 
-    type: str = Field(..., description="", example="base")
-    cbd_id: str = Field("", description="", example="o0031651.111")
-    id: str = Field("", description="", example="o0031651.111")
-    n: str = Field(..., description="", example="kaskal")
-    icount: int = Field(..., description="", example=1326)
-    ipct: int = Field(..., description="", example=0)
-    xis: str = Field(..., description="", example="sux.r00f22e")
+    n: str = Field(
+        ...,
+        alias="n",
+        description="Name or label of the glossary entry",
+        example="kaskal",
+    )
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=1326)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the glossary entry",
+        example="o0031651.111",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the glossary entry",
+        example="o0031651.111",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f22e",
+    )
+    _type: str = Field(
+        ..., alias="type", description="The type of glossary entry", example="base"
+    )
 
 
 class Cont(BaseModel):
@@ -69,13 +161,38 @@ class Cont(BaseModel):
     Lorem ipsum
     """
 
-    type: str = Field(..., description="", example="cont")
-    cbd_id: str = Field("", description="", example="o0031651.114")
-    id: str = Field("", description="", example="o0031651.114")
-    n: str = Field(..., description="", example="-la=l.a")
-    icount: int = Field(..., description="", example=57)
-    ipct: int = Field(..., description="", example=4)
-    xis: str = Field(..., description="", example="sux.r00f230")
+    n: str = Field(
+        ..., alias="n", description="Name or label of the entry", example="-la=l.a"
+    )
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=57)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=4
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the entry",
+        example="o0031651.114",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the entry",
+        example="o0031651.114",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f230",
+    )
+    _type: str = Field(
+        ..., alias="type", description="The type of entry", example="cont"
+    )
 
 
 class Morph(BaseModel):
@@ -83,13 +200,36 @@ class Morph(BaseModel):
     Lorem ipsum
     """
 
-    type: str = Field(..., description="", example="morph")
-    cbd_id: str = Field("", description="", example="o0031651.116")
-    id: str = Field("", description="", example="o0031651.116")
-    n: str = Field(..., description="", example=",ani.ta")
-    icount: int = Field(..., description="", example=1)
-    ipct: int = Field(..., description="", example=0)
-    xis: str = Field(..., description="", example="sux.r00f21c")
+    n: str = Field(..., alias="n", description="", example=",ani.ta")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=1)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the entry",
+        example="o0031651.116",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the entry",
+        example="o0031651.116",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f21c",
+    )
+    _type: str = Field(
+        ..., alias="type", description="The type of entry", example="morph"
+    )
 
 
 class Prefix(BaseModel):
@@ -97,13 +237,36 @@ class Prefix(BaseModel):
     Lorem ipsum
     """
 
-    type: str = Field(..., description="", example="prefix")
-    cbd_id: str = Field("", description="", example="o0023448.9")
-    id: str = Field("", description="", example="o0023448.9")
-    n: str = Field(..., description="", example="mu.na")
-    icount: int = Field(..., description="", example=2)
-    ipct: int = Field(..., description="", example=100)
-    xis: str = Field(..., description="", example="sux.r000009")
+    n: str = Field(..., alias="n", description="", example="mu.na")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=2)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=100
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the entry",
+        example="o0023448.9",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the entry",
+        example="o0023448.9",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r000009",
+    )
+    _type: str = Field(
+        ..., alias="type", description="The type of entry", example="prefix"
+    )
 
 
 class FormSans(BaseModel):
@@ -111,13 +274,38 @@ class FormSans(BaseModel):
     Lorem ipsum
     """
 
-    type: str = Field(..., description="", example="form-sans")
-    cbd_id: str = Field("", description="", example="o0031651.144")
-    id: str = Field("", description="", example="o0031651.144")
-    n: str = Field(..., description="", example="kas-kal")
-    icount: int = Field(..., description="", example=0)
-    ipct: int = Field(..., description="", example=0)
-    xis: str = Field(..., description="", example="sux.r000005")
+    n: str = Field(
+        ..., alias="n", description="Name or label of the entry", example="kas-kal"
+    )
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=0)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the entry",
+        example="o0031651.144",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the entry",
+        example="o0031651.144",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r000005",
+    )
+    _type: str = Field(
+        ..., alias="type", description="The type of entry", example="form-sans"
+    )
 
 
 class CofData(BaseModel):
@@ -125,10 +313,18 @@ class CofData(BaseModel):
     Lorem ipsum
     """
 
-    head: str = Field(..., description="", example="zu[tooth//ivory]N'N")
+    head: str = Field(
+        ...,
+        alias="head",
+        description="Head of the entry",
+        example="zu[tooth//ivory]N'N",
+    )
     tail: Dict[str, str] = Field(
-        ..., description="", example="{'sig': \"bir[shred//to shred]V/t'V/t\"}}"
-    )  # TODO
+        ...,
+        alias="tail",
+        description="Tail of the entry",
+        example="{'sig': \"bir[shred//to shred]V/t'V/t\"}}",
+    )
 
 
 class Signature(BaseModel):
@@ -136,15 +332,31 @@ class Signature(BaseModel):
     Lorem ipsum
     """
 
-    type: str = Field(..., description="", example="sig")
-    id: str = Field("", description="", example="o0018496.8")
     sig: str = Field(
-        "", description="", example="@epsd2%sux:zu-zu=Zuzu[1//1]PN'PN$Zuzu/zu-zu#~"
+        "",
+        alias="sig",
+        description="Signature string",
+        example="@epsd2%sux:zu-zu=Zuzu[1//1]PN'PN$Zuzu/zu-zu#~",
     )
-    icount: int = Field(..., description="", example=4)
-    ipct: int = Field(..., description="", example=57)
-    xis: str = Field(..., description="", example="sux.r002bb1")
-    cof_data: CofData = Field(None, alias="cof-data", description="")
+    cof_data: CofData = Field(None, alias="cof_data", description="CofData object")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=4)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=57
+    )
+
+    # Reference data
+    id: str = Field(
+        "", alias="id", description="Unique identifier", example="o0018496.8"
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r002bb1",
+    )
+    _type: str = Field(..., alias="type", description="Type of entry", example="sig")
 
 
 class Sense(BaseModel):
@@ -152,28 +364,55 @@ class Sense(BaseModel):
     Lorem ipsum
     """
 
-    id: str = Field(..., description="", example="sux.x0139035")
-    type: str = Field(..., description="", example="sense")
-    cbd_id: str = Field("", description="", example="sux.x0974361")
-    n: str = Field(..., description="", example="kaskal[way//way, road]N'N")
-    oracc_id: str = Field("", description="", example="o0007905", alias="oid")
-    icount: int = Field(..., description="", example=1314)
-    ipct: int = Field(..., description="", example=99)
-    xis: str = Field(..., description="", example="sux.r00f237")
-    ok: bool = Field(False, description="", example=True)
-    num: str = Field(..., description="", example="1.")
-    pos: str = Field(..., description="", example="N")
-    mng: str = Field("", description="", example="way, road")
-    forms: List[Form] = Field(..., description="", example=[])
-    norms: List[Norm] = Field(..., description="", example=[])
-    bases: List[GlossaryBase] = Field(..., description="", example=[])
-    conts: List[Cont] = Field([], description="", example=[])
-    morphs: List[Morph] = Field(..., description="", example=[])
-    form_sans: List[FormSans] = Field(
-        ..., description="", example=[], alias="form-sanss"
+    bases: List[GlossaryBase] = Field(
+        ..., alias="bases", description="List of GlossaryBase objects"
     )
-    prefixs: List[Prefix] = Field([], description="", example=[])
-    sigs: List[Signature] = Field(..., description="", example=[])
+    conts: List[Cont] = Field([], alias="conts", description="List of Cont objects")
+    forms: List[Form] = Field(..., alias="forms", description="List of Form objects")
+    form_sans: List[FormSans] = Field(
+        ..., alias="form_sans", description="List of FormSans objects"
+    )
+    mng: str = Field("", alias="mng", description="Meaning", example="way, road")
+    morphs: List[Morph] = Field(
+        ..., alias="morphs", description="List of Morph objects"
+    )
+    n: str = Field(
+        ..., alias="n", description="Name or label", example="kaskal[way//way, road]N'N"
+    )
+    norms: List[Norm] = Field(..., alias="norms", description="List of Norm objects")
+    num: str = Field(..., alias="num", description="Number", example="1.")
+    ok: bool = Field(False, alias="ok", description="OK status", example=True)
+    oracc_id: str = Field(
+        "", alias="oracc_id", description="Oracc ID", example="o0007905"
+    )
+    pos: str = Field(..., alias="pos", description="Part of speech", example="N")
+    prefixs: List[Prefix] = Field(
+        [], alias="prefixs", description="List of Prefix objects"
+    )
+    sigs: List[Signature] = Field(
+        ..., alias="sigs", description="List of Signature objects"
+    )
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=1314)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=99
+    )
+
+    # Reference data
+    id: str = Field(
+        ..., alias="id", description="Unique identifier", example="sux.x0139035"
+    )
+    cbd_id: str = Field(
+        "", alias="cbd_id", description="Canonical ID", example="sux.x0974361"
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f237",
+    )
+    _type: str = Field(..., alias="type", description="Type of entry", example="sense")
 
 
 class Period(BaseModel):
@@ -181,10 +420,21 @@ class Period(BaseModel):
     Lorem ipsum
     """
 
-    p: str = Field("", description="", example="Archaic")
-    icount: int = Field(..., description="", example=1)
-    ipct: int = Field(..., description="", example=0)
-    xis: str = Field("", description="", example="sux.r00f203.p.s000")
+    p: str = Field("", alias="p", description="Period description", example="Archaic")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=1)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    xis: str = Field(
+        "",
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f203.p.s000",
+    )
 
 
 class Compound(BaseModel):
@@ -192,15 +442,23 @@ class Compound(BaseModel):
     Lorem ipsum
     """
 
-    type: str = Field("", description="", example="cpd")
-    primary: str = Field("", description="", example="1")
-    partsig: str = Field(..., description="", example="zurzar[sound]N")
-    ref: str = Field(..., description="", example="o0043041")
-    cf: str = Field(..., description="", example="zurzar")
-    gw: str = Field(..., description="", example="sound")
-    mng: str = Field(..., description="", example="a sound (onomatopoeic)")
-    pos: str = Field(..., description="", example="N")
-    epos: str = Field(..., description="", example="N")
+    cf: str = Field(..., alias="cf", description="Citation form", example="zurzar")
+    epos: str = Field(
+        ..., alias="epos", description="Extended part of speech", example="N"
+    )
+    gw: str = Field(..., alias="gw", description="Guide word", example="sound")
+    mng: str = Field(
+        ..., alias="mng", description="Meaning", example="a sound (onomatopoeic)"
+    )
+    partsig: str = Field(
+        ..., alias="partsig", description="Part signature", example="zurzar[sound]N"
+    )
+    pos: str = Field(..., alias="pos", description="Part of speech", example="N")
+    primary: str = Field(
+        "", alias="primary", description="Primary identifier", example="1"
+    )
+    ref: str = Field(..., alias="ref", description="Reference", example="o0043041")
+    _type: str = Field("", alias="type", description="Type of entry", example="cpd")
 
 
 class GlossaryItem(BaseModel):
@@ -208,32 +466,64 @@ class GlossaryItem(BaseModel):
     Lorem ipsum
     """
 
-    alias: str = Field("", description="", example="Zubi[the Zubi//the Zubi]WN'WN")
-    headword: str = Field(..., description="", example="kaskal[way]N")
-    id: str = Field(..., description="", example="o0031651")
-    oracc_id: str = Field("", description="", example="o0031651", alias="oid")
-    icount: int = Field(..., description="", example=1333)
-    ipct: int = Field(..., description="", example=100)
-    xis: str = Field(..., description="", example="sux.o00f203")
-    dc_title: str = Field(..., description="", example="epsd2/sux/kaskal[way]")
-    cf: str = Field(..., description="citation form", example="kaskal")
-    gw: str = Field("", description="guide word", example="way")
-    pos: str = Field(..., description="part of speech", example="N")
-    forms: List[Form] = Field(..., description="", example=[])
-    norms: List[Norm] = Field(..., description="", example=[])
-    bases: List[GlossaryBase] = Field("", description="", example=[])
-    conts: List[Cont] = Field(..., description="", example=[])
-    morphs: List[Morph] = Field(..., description="", example=[])
-    morph2s: List[Morph] = Field(..., description="", example=[])
-    stems: List[str] = Field(..., description="", example=[])
-    prefixs: List[Prefix] = Field(..., description="", example=[])
-    form_sans: List[FormSans] = Field(
-        ..., description="", example=[], alias="form-sanss"
+    alias: str = Field(
+        "", alias="alias", description="Alias", example="Zubi[the Zubi//the Zubi]WN'WN"
     )
-    senses: List[Sense] = Field(..., description="", example=[])
-    periods: List[Period] = Field(..., description="", example=[])
-    compound: List[Compound] = Field([], description="", example=[])
-    rws: str = Field("", description="", example="ES")
+    bases: List[GlossaryBase] = Field(
+        "", alias="bases", description="List of GlossaryBase objects"
+    )
+    cf: str = Field(..., alias="cf", description="Citation form", example="kaskal")
+    compound: List[Compound] = Field(
+        [], alias="compound", description="List of Compound objects"
+    )
+    conts: List[Cont] = Field(..., alias="conts", description="List of Cont objects")
+    forms: List[Form] = Field(..., alias="forms", description="List of Form objects")
+    gw: str = Field("", alias="gw", description="Guide word", example="way")
+    headword: str = Field(
+        ..., alias="headword", description="Headword", example="kaskal[way]N"
+    )
+    morph2s: List[Morph] = Field(
+        ..., alias="morph2s", description="List of Morph objects"
+    )
+    morphs: List[Morph] = Field(
+        ..., alias="morphs", description="List of Morph objects"
+    )
+    norms: List[Norm] = Field(..., alias="norms", description="List of Norm objects")
+    periods: List[Period] = Field(
+        ..., alias="periods", description="List of Period objects"
+    )
+    pos: str = Field(..., alias="pos", description="Part of speech", example="N")
+    prefixs: List[Prefix] = Field(
+        ..., alias="prefixs", description="List of Prefix objects"
+    )
+    rws: str = Field("", alias="rws", description="RWS", example="ES")
+    senses: List[Sense] = Field(
+        ..., alias="senses", description="List of Sense objects"
+    )
+    stems: List[str] = Field(..., alias="stems", description="List of stems")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=1333)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=100
+    )
+
+    # Reference data
+    id: str = Field(
+        ..., alias="id", description="Unique identifier", example="o0031651"
+    )
+    dc_title: str = Field(
+        ..., alias="dc_title", description="DC Title", example="epsd2/sux/kaskal[way]"
+    )
+    oracc_id: str = Field(
+        "", alias="oracc_id", description="Oracc ID", example="o0031651"
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.o00f203",
+    )
 
 
 class Glossary(OraccFileBase):
@@ -241,13 +531,14 @@ class Glossary(OraccFileBase):
     Lorem ipsum
     """
 
-    lang: str = Field("", description="", example="sux")
-    entries: List[GlossaryItem] = Field("", description="", example=[])
+    lang: str = Field("", alias="", description="", example="sux")
+    entries: List[GlossaryItem] = Field("", alias="", description="", example=[])
     instances: Dict[str, List[str]] = Field(
-        "", description="sux-id -> list", example=[]
+        "", alias="", description="sux-id -> list", example=[]
     )
     summaries: Dict[str, str] = Field(
         "",
+        alias="",
         description="o/x-id -> summary",
         example={
             "o0023086": '<p class="summary" id="o0023086"><span class="summary"><span class="summary-headword">...'

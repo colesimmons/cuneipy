@@ -11,10 +11,10 @@ class _Modifier(BaseModel):
     Lorem ipsum
     """
 
-    b: str = Field("", description="base?", example="MU\u0160\u2083")
+    b: str = Field("", alias="b", description="base?", example="MU\u0160\u2083")
     # https://build-oracc.museum.upenn.edu//ns/gdl/1.0/index.html#Modifier
-    m: str = Field("", description="modifier?", example="g")
-    a: str = Field("", description="", example="a")
+    m: str = Field("", alias="m", description="modifier?", example="g")
+    a: str = Field("", alias="a", description="", example="a")
 
 
 _Sequence = ForwardRef("_Sequence")
@@ -25,16 +25,16 @@ class _Sequence(BaseModel):
     Lorem ipsum
     """
 
-    s: str = Field("", description="Sign", example="A")
+    s: str = Field("", alias="s", description="Sign", example="A")
     # beside, joining, containing, above, crossing, opposing, repeated
-    o: str = Field("", description="Operator types", example="beside")
-    form: str = Field("", description="", example="MU\u0160\u2083@g")
-    mods: List[_Modifier] = Field([], description="", example=[])
-    m: str = Field("", description="", example="l")
-    n: str = Field("", description="", example="n")
-    r: str = Field("", description="", example="9")
+    o: str = Field("", alias="o", description="Operator types", example="beside")
+    form: str = Field("", alias="form", description="", example="MU\u0160\u2083@g")
+    mods: List[_Modifier] = Field([], alias="mods", description="", example=[])
+    m: str = Field("", alias="", description="m", example="l")
+    n: str = Field("", alias="", description="n", example="n")
+    r: str = Field("", alias="", description="r", example="9")
     seq: List[_Sequence] = Field(
-        [], description="", example=[{"s": "GI\u0160", "o": "beside"}]
+        [], alias="seq", description="", example=[{"s": "GI\u0160", "o": "beside"}]
     )
 
 
@@ -44,16 +44,16 @@ _Sequence.update_forward_refs()
 class _GDL(BaseModel):
     """GDL = Grapheme Description Language"""
 
-    c: str = Field("", description="Compound", example="|GI\u0160.LU\u2082|")
+    c: str = Field("", alias="c", description="Compound", example="|GI\u0160.LU\u2082|")
     seq: List[_Sequence] = Field(
-        [], description="", example=[{"s": "GI\u0160", "o": "beside"}]
+        [], alias="seq", description="", example=[{"s": "GI\u0160", "o": "beside"}]
     )
     mods: List[Dict[str, str]] = Field(
-        "", description="", example=[{"b": "ZA"}, {"m": "t"}]
+        "", alias="mods", description="", example=[{"b": "ZA"}, {"m": "t"}]
     )
-    n: str = Field("", description="", example="n")
-    form: str = Field("", description="", example="9(U)")
-    s: str = Field("", description="", example="ZU₅")
+    n: str = Field("", alias="n", description="", example="n")
+    form: str = Field("", alias="form", description="", example="9(U)")
+    s: str = Field("", alias="s", description="", example="ZU₅")
 
 
 class _Sign(BaseModel):
@@ -62,9 +62,11 @@ class _Sign(BaseModel):
     """
 
     # Are these two lists the same length?...
-    gdl: List[_GDL] = Field(..., description="", example=[{"c": "|GI\u0160.LU\u2082|"}])
+    gdl: List[_GDL] = Field(
+        ..., alias="gdl", description="", example=[{"c": "|GI\u0160.LU\u2082|"}]
+    )
     values: List[str] = Field(
-        [], description="", example=["a", "aya₂", "dur₅", "duru₅"]
+        [], alias="values", description="", example=["a", "aya₂", "dur₅", "duru₅"]
     )
 
 
@@ -73,8 +75,10 @@ class SignList(OraccFileBase):
     Lorem ipsum
     """
 
-    index: Dict[str, str] = Field(..., description="", example={"am₃": "|A.AN|"})
-    signs: Dict[str, _Sign] = Field(..., description="", example={})
+    index: Dict[str, str] = Field(
+        ..., alias="index", description="", example={"am₃": "|A.AN|"}
+    )
+    signs: Dict[str, _Sign] = Field(..., alias="signs", description="", example={})
 
     @classmethod
     def load(cls) -> "SignList":

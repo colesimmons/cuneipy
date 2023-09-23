@@ -11,9 +11,11 @@ class Chunk(BaseModel):
     Lorem ipsum
     """
 
-    type: str = Field(..., description="", example="h1")
-    url: str = Field(..., description="", example="epsd2/index.html#d2e38")
-    text: str = Field(..., description="", example="ePSD2 2.5 (2021-12-21)")
+    type: str = Field(..., alias="type", description="", example="h1")
+    url: str = Field(..., alias="url", description="", example="epsd2/index.html#d2e38")
+    text: str = Field(
+        ..., alias="text", description="", example="ePSD2 2.5 (2021-12-21)"
+    )
 
 
 class Portal(OraccFileBase):

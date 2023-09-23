@@ -6,22 +6,39 @@ from oracc.epsd2.models.utils import BaseModel, OraccFileBase
 from oracc.epsd2.utils import load_json
 
 
+# Config class
 class Config(BaseModel):
     """
     Lorem ipsum
     """
 
-    pathname: str = Field(..., description="", example="epsd2")
-    name: str = Field(..., description="", example="electronic PSD 2nd Edition")
-    abbrev: str = Field(..., description="", example="ePSD2")
-    project_type: str = Field(
-        ..., alias="project-type", description="", example="superglo"
+    abbrev: str = Field(
+        ..., alias="abbrev", description="Abbreviation of the project", example="ePSD2"
     )
-    blurb: str = Field(..., description="", example="")
-    public: str = Field(..., description="", example="")
-    options: Dict[str, str] = Field(..., description="", example={})
+    blurb: str = Field(
+        ..., alias="blurb", description="Short description or blurb", example=""
+    )
+    name: str = Field(
+        ...,
+        alias="name",
+        description="Name of the project",
+        example="electronic PSD 2nd Edition",
+    )
+    options: Dict[str, str] = Field(
+        ..., alias="options", description="Additional options", example={}
+    )
+    pathname: str = Field(
+        ..., alias="pathname", description="Path name", example="epsd2"
+    )
+    project_type: str = Field(
+        ..., alias="project_type", description="Type of the project", example="superglo"
+    )
+    public: str = Field(
+        ..., alias="public", description="Public availability status", example=""
+    )
 
 
+# Metadata class
 class Metadata(OraccFileBase):
     """
     This provides several objects:
@@ -30,8 +47,12 @@ class Metadata(OraccFileBase):
     "formats" - a collection of lists indicating the presence of transliterations, transliterations and lemmatized data in the project.
     """
 
-    config: Config = Field(..., description="", example={})
-    formats: Dict[str, str] = Field(..., description="", example={})
+    config: Config = Field(
+        ..., alias="config", description="Configuration information", example={}
+    )
+    formats: Dict[str, str] = Field(
+        ..., alias="formats", description="Data formats available", example={}
+    )
 
     @classmethod
     def load(cls) -> "Metadata":
