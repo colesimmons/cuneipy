@@ -1,11 +1,16 @@
 """
 """
+import json
 import os
-import requests
 import zipfile
+from typing import Union, Dict, List, Any
+
+import requests
+
+JSONType = Union[Dict[str, Any], List[Any]]
 
 
-def download_data():
+def download_json():
     """Download the ePSD2 JSON data to ./json/"""
     # Get the directory containing this script
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -55,3 +60,17 @@ def download_data():
     downloads_folder_path = os.path.join(script_dir, "json")
     print(f"Renaming folder {extracted_folder_name} to json/")
     os.rename(extracted_folder_path, downloads_folder_path)
+
+
+def load_json(filename: str) -> JSONType:
+    """Load a JSON file from the ./json/ directory"""
+    cur_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(cur_dir, "json/", filename)
+
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File {filename} not found in sibling directory.")
+
+    # Read the file and instantiate the class
+    with open(file_path, "r", encoding="utf-8") as infile:
+        return json.load(infile)  # Assuming the file contains JSON data
