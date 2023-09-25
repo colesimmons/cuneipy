@@ -39,9 +39,10 @@ class _GDL(BaseModel):
     """GDL = Grapheme Description Language"""
 
     c: str = Field("", alias="c", description="Compound", example="|GI\u0160.LU\u2082|")
-    seq: List[_Sequence] = Field(
-        [], alias="seq", description="", example=[{"s": "GI\u0160", "o": "beside"}]
-    )
+
+    # Will only be defined for number signs or compound signs
+    seq: List[_Sequence] = Field([], alias="seq")
+
     mods: List[Dict[str, str]] = Field(
         "", alias="mods", description="", example=[{"b": "ZA"}, {"m": "t"}]
     )
@@ -55,24 +56,32 @@ class _Sign(BaseModel):
     Lorem ipsum
     """
 
-    # Are these two lists the same length?...
     gdl: List[_GDL] = Field(
         ..., alias="gdl", description="", example=[{"c": "|GI\u0160.LU\u2082|"}]
     )
     values: List[str] = Field(
-        [], alias="values", description="", example=["a", "aya₂", "dur₅", "duru₅"]
+        [],
+        alias="values",
+        description="Possible readings of a sign",
+        example=["a", "aya₂", "dur₅", "duru₅"],
     )
 
 
 class SignList(OraccFileBase):
-    """
-    Lorem ipsum
-    """
+    """ """
 
     index: Dict[str, str] = Field(
-        ..., alias="index", description="", example={"am₃": "|A.AN|"}
+        ...,
+        alias="index",
+        description="Mapping from values to sign names",
+        example={"am₃": "|A.AN|"},
     )
-    signs: Dict[str, _Sign] = Field(..., alias="signs", description="", example={})
+    signs: Dict[str, _Sign] = Field(
+        ...,
+        alias="signs",
+        description="Mapping from sign name to detailed sign data",
+        example={},
+    )
 
     @classmethod
     def load(cls) -> "SignList":

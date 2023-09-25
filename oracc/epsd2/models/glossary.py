@@ -1,122 +1,23 @@
 """
 """
-from typing import Dict, List
-from pydantic import Field
+from typing import Any, Dict, List
+from pydantic import Field, model_validator
 from oracc.epsd2.models.utils import BaseModel, OraccFileBase
 from oracc.epsd2.utils import load_json
 
 
-class Form(BaseModel):
+class _Base(BaseModel):
     """
-    Represents a form of a word or term.
-    """
+    Rather than use the term 'root' we use the term 'base' to indicate
+    the portion of a word-form that writes the word itself
+    rather than any attached morphological markers.
 
-    c: int = Field("", alias="c", description="", example=49745)
-    n: str = Field(..., alias="n", description="", example="kas-kal")
-    rws: str = Field("", alias="rws", description="", example="ES")
+    Two special notations are used for Sumerian bases for situations where a single grapheme combines morphology and base.
+    When the first part of the grapheme is morphological and the second part belongs to the base,
+    we separate them with the degree symbol, °, as in b°e₂ for b+e.
 
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=0)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
-    )
-
-    # Reference data
-    id: str = Field(
-        "",
-        alias="id",
-        description="Unique identifier for the form",
-        example="o0031651.0",
-    )
-    cbd_id: str = Field(
-        "",
-        alias="cbd_id",
-        description="Unique identifier for the form",
-        example="o0031651.0",
-    )
-    ref: str = Field("", alias="ref", description="Reference ID", example="o0048612.0")
-    xis: str = Field(
-        ...,
-        alias="xis",
-        description="Extended identifier string",
-        example="sux.r000005",
-    )
-    type: str = Field(..., alias="type", description="", example="form")
-
-
-class NormForm(BaseModel):
-    """
-    Represents a normalized form of a word or term.
-    """
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=0)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
-    )
-
-    # Reference data
-    cbd_id: str = Field(
-        ...,
-        alias="cbd_id",
-        description="Canonical ID for the normalized form",
-        example="o0031651.42",
-    )
-    ref: str = Field(..., alias="ref", description="Reference ID", example="o0031651.0")
-    type: str = Field(..., alias="type", description="", example="normform")
-    xis: str = Field(
-        ...,
-        alias="xis",
-        description="Extended identifier string",
-        example="sux.r000005",
-    )
-
-
-class Norm(BaseModel):
-    """
-    Represents a normalized word or term.
-    """
-
-    forms: List[NormForm] = Field(
-        [], alias="forms", description="List of normalized forms", example=[]
-    )
-    n: str = Field(
-        ...,
-        alias="n",
-        description="Name or label of the normalized word",
-        example="kaskal",
-    )
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=366)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=27
-    )
-
-    # Reference data
-    id: str = Field(
-        "",
-        alias="id",
-        description="Unique identifier for the normalized word",
-        example="o0031651.41",
-    )
-    cbd_id: str = Field(
-        "",
-        alias="cbd_id",
-        description="Canonical ID for the normalized word",
-        example="o0031651.41",
-    )
-    xis: str = Field(
-        ...,
-        alias="xis",
-        description="Extended identifier string",
-        example="sux.r00f228",
-    )
-
-
-class GlossaryBase(BaseModel):
-    """
-    Represents a base glossary entry.
+    When the first part of the grapheme belongs to the base and the second is morphological,
+    we separate them using the centred dot, ·, as in e₂-udu-k·a, a writing of e'uduk[sheephouse].
     """
 
     n: str = Field(
@@ -156,9 +57,110 @@ class GlossaryBase(BaseModel):
     )
 
 
-class Cont(BaseModel):
+class _Bibliography(BaseModel):
     """
     Lorem ipsum
+    """
+
+    ref: str = Field(
+        ..., alias="ref", description="Reference", example="H. Waetzoldt, UNT 11-12."
+    )
+    year: str = Field(..., alias="year", description="Year", example="1972")
+
+
+class _Compound(BaseModel):
+    """
+    Lorem ipsum
+    """
+
+    citation_form: str = Field(
+        ...,
+        alias="cf",
+        description="The headword used in the dictionary. "
+        "In general, ePSD2 headwords use the long forms of words, and explicitly include the final -k in genitive compounds.",
+        example="kaskal",
+    )
+    effective_part_of_speech: PartOfSpeechEnum = Field(
+        ..., alias="epos", description="Effective part of speech", example="N"
+    )
+    guide_word: str = Field(
+        ...,
+        alias="gw",
+        description="A label for the word which is primarily intended as a way of disambiguating homophones. "
+        "Guide Words are not necessarily a 'basic' meaning for the word, although in practice this is often the case.",
+        example="sound",
+    )
+    meaning: str = Field(
+        ..., alias="mng", description="Meaning", example="a sound (onomatopoeic)"
+    )
+    partsig: str = Field(
+        ..., alias="partsig", description="Part signature", example="zurzar[sound]N"
+    )
+    part_of_speech: PartOfSpeechEnum = Field(
+        ...,
+        alias="pos",
+        description="The reference part-of-speech for the word. "
+        "In some cases, words are used both as nouns and as verbs, "
+        "and it is not always obvious which to use as the reference part-of-speech. "
+        "In this case we simply make a conventional choice. See EPOS.",
+        example="N",
+    )
+    primary: str = Field(
+        "", alias="primary", description="Primary identifier", example="1"
+    )
+    ref: str = Field(..., alias="ref", description="Reference", example="o0043041")
+    type: str = Field("", alias="type", description="Type of entry", example="cpd")
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_pos(cls, data: Any) -> Any:
+        """Hotfix instance where 'pos'/'epos' is 'n' instead of 'N'"""
+        if isinstance(data, dict):
+            if "pos" in data and data["pos"] == "n":
+                data["pos"] = "N"
+            if "epos" in data and data["epos"] == "n":
+                data["epos"] = "N"
+        return data
+
+
+class _CompoundOrthographicForm(BaseModel):
+    """
+    COFs: Compound Orthographic Forms
+
+    COFs are forms that are written as one word but in fact should be understood as more than one lemma.
+    Their meanings are transparent and they do not justify a separate entry in the glossary.
+
+
+    http://oracc.museum.upenn.edu/doc/help/glossaries/cofs/index.html
+    """
+
+    head: str = Field(
+        ...,
+        alias="head",
+        description="Head of the entry",
+        example="zu[tooth//ivory]N'N",
+    )
+    tail: Dict[str, str] = Field(
+        ...,
+        alias="tail",
+        description="Tail of the entry",
+        example="{'sig': \"bir[shred//to shred]V/t'V/t\"}}",
+    )
+
+
+class _Continuation(BaseModel):
+    """
+    Continuation graphemes are annotated explicitly because they often give information about the ending of a word.
+    They have the form +-ga=g.a meaning that the base is followed by GA, writing the end of the base, g, and some other item, a.
+
+    There is some inconsistency in ePSD2 about when a CONT is used and when a centred dot is used in the base:
+    this will be rectified in a forthcoming release.
+
+    ---
+
+    The Sumerian grapheme following the base, used only when that grapheme is the continuation of the end of the BASE, e.g., -ma in inim-ma.
+    The deconstruction of the grapheme gives the consonant which continues the grapheme followed by the vowel which is normally a morpheme or morpheme constituent.
+    http://oracc.museum.upenn.edu/doc/help/glossaries/index.html
     """
 
     n: str = Field(
@@ -195,15 +197,26 @@ class Cont(BaseModel):
     )
 
 
-class Morph(BaseModel):
+class _Equivalency(BaseModel):
     """
     Lorem ipsum
     """
 
-    n: str = Field(..., alias="n", description="", example=",ani.ta")
+    equiv: str = Field(..., alias="equiv", description="Equivalent to", example="rimmu")
+    lang: str = Field(..., alias="lang", description="Language", example="akk")
+
+
+class _Form(BaseModel):
+    """
+    Represents a form of a word or term.
+    """
+
+    c: int = Field("", alias="c", description="", example=49745)
+    n: str = Field(..., alias="n", description="", example="kas-kal")
+    rws: str = Field("", alias="rws", description="", example="ES")
 
     # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=1)
+    count: int = Field(..., alias="icount", description="Instance count", example=0)
     percent_of_instances: int = Field(
         ..., alias="ipct", description="Instance percentage", example=0
     )
@@ -212,64 +225,26 @@ class Morph(BaseModel):
     id: str = Field(
         "",
         alias="id",
-        description="Unique identifier for the entry",
-        example="o0031651.116",
+        description="Unique identifier for the form",
+        example="o0031651.0",
     )
     cbd_id: str = Field(
         "",
         alias="cbd_id",
-        description="Canonical ID for the entry",
-        example="o0031651.116",
+        description="Unique identifier for the form",
+        example="o0031651.0",
     )
+    ref: str = Field("", alias="ref", description="Reference ID", example="o0048612.0")
     xis: str = Field(
         ...,
         alias="xis",
         description="Extended identifier string",
-        example="sux.r00f21c",
+        example="sux.r000005",
     )
-    type: str = Field(
-        ..., alias="type", description="The type of entry", example="morph"
-    )
+    type: str = Field(..., alias="type", description="", example="form")
 
 
-class Prefix(BaseModel):
-    """
-    Lorem ipsum
-    """
-
-    n: str = Field(..., alias="n", description="", example="mu.na")
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=2)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=100
-    )
-
-    # Reference data
-    id: str = Field(
-        "",
-        alias="id",
-        description="Unique identifier for the entry",
-        example="o0023448.9",
-    )
-    cbd_id: str = Field(
-        "",
-        alias="cbd_id",
-        description="Canonical ID for the entry",
-        example="o0023448.9",
-    )
-    xis: str = Field(
-        ...,
-        alias="xis",
-        description="Extended identifier string",
-        example="sux.r000009",
-    )
-    type: str = Field(
-        ..., alias="type", description="The type of entry", example="prefix"
-    )
-
-
-class FormSans(BaseModel):
+class _FormSans(BaseModel):
     """
     Lorem ipsum
     """
@@ -308,26 +283,187 @@ class FormSans(BaseModel):
     )
 
 
-class CofData(BaseModel):
+class _Morphology(BaseModel):
+    """
+    The morphology string follows a simple set of conventions for which preliminary documentation is available on the morphology pages.
+    http://oracc.museum.upenn.edu/epsd2/about/annotation/morphology/index.html
+    """
+
+    n: str = Field(..., alias="n", description="", example=",ani.ta")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=1)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the entry",
+        example="o0031651.116",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the entry",
+        example="o0031651.116",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f21c",
+    )
+    type: str = Field(
+        ..., alias="type", description="The type of entry", example="morph"
+    )
+
+
+class _NormalizationForm(BaseModel):
+    """
+    Represents a normalized form of a word or term.
+    """
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=0)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    cbd_id: str = Field(
+        ...,
+        alias="cbd_id",
+        description="Canonical ID for the normalized form",
+        example="o0031651.42",
+    )
+    ref: str = Field(..., alias="ref", description="Reference ID", example="o0031651.0")
+    type: str = Field(..., alias="type", description="", example="normform")
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r000005",
+    )
+
+
+class _Normalization(BaseModel):
+    """
+    Represents a normalized word or term.
+    """
+
+    forms: List[_NormalizationForm] = Field(
+        [], alias="forms", description="List of normalized forms", example=[]
+    )
+    n: str = Field(
+        ...,
+        alias="n",
+        description="Name or label of the normalized word",
+        example="kaskal",
+    )
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=366)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=27
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the normalized word",
+        example="o0031651.41",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the normalized word",
+        example="o0031651.41",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f228",
+    )
+
+
+class _Period(BaseModel):
     """
     Lorem ipsum
     """
 
-    head: str = Field(
-        ...,
-        alias="head",
-        description="Head of the entry",
-        example="zu[tooth//ivory]N'N",
+    name: PeriodEnum = Field(
+        ..., alias="p", description="Period description", example="Archaic"
     )
-    tail: Dict[str, str] = Field(
-        ...,
-        alias="tail",
-        description="Tail of the entry",
-        example="{'sig': \"bir[shred//to shred]V/t'V/t\"}}",
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=1)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=0
+    )
+
+    # Reference data
+    xis: str = Field(
+        "",
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r00f203.p.s000",
     )
 
 
-class Signature(BaseModel):
+class _Prefix(BaseModel):
+    """
+    Lorem ipsum
+    """
+
+    n: str = Field(..., alias="n", description="", example="mu.na")
+
+    # Occurrence data
+    count: int = Field(..., alias="icount", description="Instance count", example=2)
+    percent_of_instances: int = Field(
+        ..., alias="ipct", description="Instance percentage", example=100
+    )
+
+    # Reference data
+    id: str = Field(
+        "",
+        alias="id",
+        description="Unique identifier for the entry",
+        example="o0023448.9",
+    )
+    cbd_id: str = Field(
+        "",
+        alias="cbd_id",
+        description="Canonical ID for the entry",
+        example="o0023448.9",
+    )
+    xis: str = Field(
+        ...,
+        alias="xis",
+        description="Extended identifier string",
+        example="sux.r000009",
+    )
+    type: str = Field(
+        ..., alias="type", description="The type of entry", example="prefix"
+    )
+
+
+class _SeeCompound(BaseModel):
+    """
+    Lorem ipsum
+    """
+
+    xcpd: str = Field(
+        ..., alias="xcpd", description="", example="zurzar za[make noise]V/t"
+    )
+    eref: str = Field(..., alias="eref", description="", example="o0043043")
+
+
+class _Signature(BaseModel):
     """
     Lorem ipsum
     """
@@ -338,7 +474,9 @@ class Signature(BaseModel):
         description="Signature string",
         example="@epsd2%sux:zu-zu=Zuzu[1//1]PN'PN$Zuzu/zu-zu#~",
     )
-    cof_data: CofData = Field(None, alias="cof-data", description="CofData object")
+    cof_data: _CompoundOrthographicForm = Field(
+        None, alias="cof-data", description="CofData object"
+    )
 
     # Occurrence data
     count: int = Field(..., alias="icount", description="Instance count", example=4)
@@ -359,37 +497,45 @@ class Signature(BaseModel):
     type: str = Field(..., alias="type", description="Type of entry", example="sig")
 
 
-class Sense(BaseModel):
+class _Sense(BaseModel):
     """
-    Lorem ipsum
+    Senses are indicative of the range of meanings of words.
+
+    An ongoing objective for future work on ePSD2 is to improve annotation of the corpora
+    with regard to senses in order to provide a more nuanced understanding of the ways words are used in context.
     """
 
-    bases: List[GlossaryBase] = Field(
+    bases: List[_Base] = Field(
         ..., alias="bases", description="List of GlossaryBase objects"
     )
-    conts: List[Cont] = Field([], alias="conts", description="List of Cont objects")
-    forms: List[Form] = Field(..., alias="forms", description="List of Form objects")
-    form_sans: List[FormSans] = Field(
+
+    continuation: List[_Continuation] = Field(
+        [], alias="conts", description="List of Cont objects"
+    )
+    forms: List[_Form] = Field(..., alias="forms", description="List of Form objects")
+    form_sans: List[_FormSans] = Field(
         ..., alias="form-sanss", description="List of FormSans objects"
     )
     mng: str = Field("", alias="mng", description="Meaning", example="way, road")
-    morphs: List[Morph] = Field(
-        ..., alias="morphs", description="List of Morph objects"
+    morphs: List[_Morphology] = Field(
+        ..., alias="morphs", description="List of _Morphology objects"
     )
     n: str = Field(
         ..., alias="n", description="Name or label", example="kaskal[way//way, road]N'N"
     )
-    norms: List[Norm] = Field(..., alias="norms", description="List of Norm objects")
+    norms: List[_Normalization] = Field(
+        ..., alias="norms", description="List of Norm objects"
+    )
     num: str = Field(..., alias="num", description="Number", example="1.")
     ok: bool = Field(False, alias="ok", description="OK status", example=True)
     oracc_id: str = Field(
         "", alias="oracc_id", description="Oracc ID", example="o0007905"
     )
     pos: str = Field(..., alias="pos", description="Part of speech", example="N")
-    prefixs: List[Prefix] = Field(
+    prefixs: List[_Prefix] = Field(
         [], alias="prefixs", description="List of Prefix objects"
     )
-    sigs: List[Signature] = Field(
+    sigs: List[_Signature] = Field(
         ..., alias="sigs", description="List of Signature objects"
     )
 
@@ -416,84 +562,10 @@ class Sense(BaseModel):
     type: str = Field(..., alias="type", description="Type of entry", example="sense")
 
 
-class Period(BaseModel):
-    """
-    Lorem ipsum
-    """
-
-    p: str = Field("", alias="p", description="Period description", example="Archaic")
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=1)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
-    )
-
-    # Reference data
-    xis: str = Field(
-        "",
-        alias="xis",
-        description="Extended identifier string",
-        example="sux.r00f203.p.s000",
-    )
+# TODO: Field(title="")
 
 
-class Compound(BaseModel):
-    """
-    Lorem ipsum
-    """
-
-    cf: str = Field(..., alias="cf", description="Citation form", example="zurzar")
-    epos: str = Field(
-        ..., alias="epos", description="Extended part of speech", example="N"
-    )
-    gw: str = Field(..., alias="gw", description="Guide word", example="sound")
-    mng: str = Field(
-        ..., alias="mng", description="Meaning", example="a sound (onomatopoeic)"
-    )
-    partsig: str = Field(
-        ..., alias="partsig", description="Part signature", example="zurzar[sound]N"
-    )
-    pos: str = Field(..., alias="pos", description="Part of speech", example="N")
-    primary: str = Field(
-        "", alias="primary", description="Primary identifier", example="1"
-    )
-    ref: str = Field(..., alias="ref", description="Reference", example="o0043041")
-    type: str = Field("", alias="type", description="Type of entry", example="cpd")
-
-
-class SeeCompound(BaseModel):
-    """
-    Lorem ipsum
-    """
-
-    xcpd: str = Field(
-        ..., alias="xcpd", description="", example="zurzar za[make noise]V/t"
-    )
-    eref: str = Field(..., alias="eref", description="", example="o0043043")
-
-
-class Bibliography(BaseModel):
-    """
-    Lorem ipsum
-    """
-
-    ref: str = Field(
-        ..., alias="ref", description="Reference", example="H. Waetzoldt, UNT 11-12."
-    )
-    year: str = Field(..., alias="year", description="Year", example="1972")
-
-
-class Equivalency(BaseModel):
-    """
-    Lorem ipsum
-    """
-
-    equiv: str = Field(..., alias="equiv", description="Equivalent to", example="rimmu")
-    lang: str = Field(..., alias="lang", description="Language", example="akk")
-
-
-class GlossaryItem(BaseModel):
+class _Entry(BaseModel, OccurrenceStatsMixin):
     """
     Lorem ipsum
     """
@@ -501,50 +573,56 @@ class GlossaryItem(BaseModel):
     alias: str = Field(
         "", alias="alias", description="Alias", example="Zubi[the Zubi//the Zubi]WN'WN"
     )
-    bases: List[GlossaryBase] = Field(
-        "", alias="bases", description="List of GlossaryBase objects"
+    citation_form: str = Field(
+        ...,
+        alias="cf",
+        description="The headword used in the dictionary. "
+        "In general, ePSD2 headwords use the long forms of words, and explicitly include the final -k in genitive compounds.",
+        example="kaskal",
     )
-    bib: List[Bibliography] = Field([], alias="bib", description="Bibliography")
-    cf: str = Field(..., alias="cf", description="Citation form", example="kaskal")
-    compound: List[Compound] = Field(
-        [], alias="compound", description="List of Compound objects"
+    guide_word: str = Field(
+        "",
+        alias="gw",
+        description="A label for the word which is primarily intended as a way of disambiguating homophones. "
+        "Guide Words are not necessarily a 'basic' meaning for the word, although in practice this is often the case.",
+        example="way",
     )
-    conts: List[Cont] = Field(..., alias="conts", description="List of Cont objects")
-    equivalencies: List[Equivalency] = Field(
-        [], alias="equivs", description="List of equivalent items in other languages"
-    )
-    forms: List[Form] = Field(..., alias="forms", description="List of Form objects")
-    form_sans: List[FormSans] = Field(..., alias="form-sanss", description="")
-    gw: str = Field("", alias="gw", description="Guide word", example="way")
     headword: str = Field(
         ..., alias="headword", description="Headword", example="kaskal[way]N"
     )
-    morph2s: List[Morph] = Field(
-        ..., alias="morph2s", description="List of Morph objects"
+    part_of_speech: str = Field(
+        ...,
+        alias="pos",
+        description="The reference part-of-speech for the word. "
+        "In some cases, words are used both as nouns and as verbs, "
+        "and it is not always obvious which to use as the reference part-of-speech. "
+        "In this case we simply make a conventional choice. See EPOS.",
+        example="N",
     )
-    morphs: List[Morph] = Field(
-        ..., alias="morphs", description="List of Morph objects"
+    register_or_writing_system: str = Field(
+        "", alias="rws", description="'' or 'ES'", example="ES"
     )
-    norms: List[Norm] = Field(..., alias="norms", description="List of Norm objects")
-    periods: List[Period] = Field(
-        ..., alias="periods", description="List of Period objects"
-    )
-    pos: str = Field(..., alias="pos", description="Part of speech", example="N")
-    prefixs: List[Prefix] = Field(
-        ..., alias="prefixs", description="List of Prefix objects"
-    )
-    rws: str = Field("", alias="rws", description="RWS", example="ES")
-    see_compounds: List[SeeCompound] = Field([], alias="see-compounds", description="")
-    senses: List[Sense] = Field(
+
+    bases: List[_Base] = Field(..., alias="bases")
+    bibliography: List[_Bibliography] = Field([], alias="bib")
+    compounds: List[_Compound] = Field([], alias="compound")
+    continuations: List[_Continuation] = Field(..., alias="conts")
+    equivalencies: List[_Equivalency] = Field([], alias="equivs")
+    forms: List[_Form] = Field(..., alias="forms")
+    form_sans: List[_FormSans] = Field(..., alias="form-sanss")
+    morphology: List[_Morphology] = Field(..., alias="morphs")
+
+    # Always empty
+    morphology_2: List[_Morphology] = Field(..., alias="morph2s")
+
+    normalized: List[_Normalization] = Field(..., alias="norms")
+    periods: List[_Period] = Field(..., alias="periods")
+    prefixs: List[_Prefix] = Field(..., alias="prefixs")
+    see_compounds: List[_SeeCompound] = Field([], alias="see-compounds", description="")
+    senses: List[_Sense] = Field(
         ..., alias="senses", description="List of Sense objects"
     )
     stems: List[str] = Field(..., alias="stems", description="List of stems")
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=1333)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=100
-    )
 
     # Reference data
     id: str = Field(
@@ -571,7 +649,7 @@ class Glossary(OraccFileBase):
     """
 
     lang: str = Field("", alias="lang", description="", example="sux")
-    entries: List[GlossaryItem] = Field("", alias="entries", description="", example=[])
+    entries: List[_Entry] = Field("", alias="entries", description="", example=[])
     instances: Dict[str, List[str]] = Field(
         "", alias="instances", description="sux-id -> list", example=[]
     )
