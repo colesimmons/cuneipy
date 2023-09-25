@@ -47,7 +47,13 @@ class OraccFileBase(BaseModel):
 
 class OccurrenceStatsMixin(PydanticBaseModel):
     """
-    Occurrence statistics
+    Mixin for adding occurrence statistics to a model.
+
+    Attributes:
+        count (int): The total number of instances for a particular entity.
+            Aliased as 'icount' in serialized form.
+        percent_of_instances (int): The percentage of instances that the entity represents
+            relative to some total. Aliased as 'ipct' in serialized form.
     """
 
     # Occurrence data

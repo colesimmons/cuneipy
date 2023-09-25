@@ -2,11 +2,17 @@
 """
 from typing import Any, Dict, List
 from pydantic import Field, model_validator
-from oracc.epsd2.models.utils import BaseModel, OraccFileBase
+from oracc.epsd2.models.utils import (
+    BaseModel,
+    OraccFileBase,
+    PeriodEnum,
+    PartOfSpeechEnum,
+    OccurrenceStatsMixin,
+)
 from oracc.epsd2.utils import load_json
 
 
-class _Base(BaseModel):
+class _Base(BaseModel, OccurrenceStatsMixin):
     """
     Rather than use the term 'root' we use the term 'base' to indicate
     the portion of a word-form that writes the word itself
@@ -25,12 +31,6 @@ class _Base(BaseModel):
         alias="n",
         description="Name or label of the glossary entry",
         example="kaskal",
-    )
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=1326)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
     )
 
     # Reference data
@@ -148,7 +148,7 @@ class _CompoundOrthographicForm(BaseModel):
     )
 
 
-class _Continuation(BaseModel):
+class _Continuation(BaseModel, OccurrenceStatsMixin):
     """
     Continuation graphemes are annotated explicitly because they often give information about the ending of a word.
     They have the form +-ga=g.a meaning that the base is followed by GA, writing the end of the base, g, and some other item, a.
@@ -165,12 +165,6 @@ class _Continuation(BaseModel):
 
     n: str = Field(
         ..., alias="n", description="Name or label of the entry", example="-la=l.a"
-    )
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=57)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=4
     )
 
     # Reference data
@@ -206,7 +200,7 @@ class _Equivalency(BaseModel):
     lang: str = Field(..., alias="lang", description="Language", example="akk")
 
 
-class _Form(BaseModel):
+class _Form(BaseModel, OccurrenceStatsMixin):
     """
     Represents a form of a word or term.
     """
@@ -214,12 +208,6 @@ class _Form(BaseModel):
     c: int = Field("", alias="c", description="", example=49745)
     n: str = Field(..., alias="n", description="", example="kas-kal")
     rws: str = Field("", alias="rws", description="", example="ES")
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=0)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
-    )
 
     # Reference data
     id: str = Field(
@@ -244,19 +232,13 @@ class _Form(BaseModel):
     type: str = Field(..., alias="type", description="", example="form")
 
 
-class _FormSans(BaseModel):
+class _FormSans(BaseModel, OccurrenceStatsMixin):
     """
     Lorem ipsum
     """
 
     n: str = Field(
         ..., alias="n", description="Name or label of the entry", example="kas-kal"
-    )
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=0)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
     )
 
     # Reference data
@@ -269,7 +251,7 @@ class _FormSans(BaseModel):
     cbd_id: str = Field(
         "",
         alias="cbd_id",
-        description="Canonical ID for the entry",
+        description="Corpus-Based Dictionary ID",
         example="o0031651.144",
     )
     xis: str = Field(
@@ -283,19 +265,13 @@ class _FormSans(BaseModel):
     )
 
 
-class _Morphology(BaseModel):
+class _Morphology(BaseModel, OccurrenceStatsMixin):
     """
     The morphology string follows a simple set of conventions for which preliminary documentation is available on the morphology pages.
     http://oracc.museum.upenn.edu/epsd2/about/annotation/morphology/index.html
     """
 
     n: str = Field(..., alias="n", description="", example=",ani.ta")
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=1)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
-    )
 
     # Reference data
     id: str = Field(
@@ -321,16 +297,10 @@ class _Morphology(BaseModel):
     )
 
 
-class _NormalizationForm(BaseModel):
+class _NormalizationForm(BaseModel, OccurrenceStatsMixin):
     """
     Represents a normalized form of a word or term.
     """
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=0)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
-    )
 
     # Reference data
     cbd_id: str = Field(
@@ -349,7 +319,7 @@ class _NormalizationForm(BaseModel):
     )
 
 
-class _Normalization(BaseModel):
+class _Normalization(BaseModel, OccurrenceStatsMixin):
     """
     Represents a normalized word or term.
     """
@@ -362,12 +332,6 @@ class _Normalization(BaseModel):
         alias="n",
         description="Name or label of the normalized word",
         example="kaskal",
-    )
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=366)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=27
     )
 
     # Reference data
@@ -391,19 +355,13 @@ class _Normalization(BaseModel):
     )
 
 
-class _Period(BaseModel):
+class _Period(BaseModel, OccurrenceStatsMixin):
     """
     Lorem ipsum
     """
 
     name: PeriodEnum = Field(
         ..., alias="p", description="Period description", example="Archaic"
-    )
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=1)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=0
     )
 
     # Reference data
@@ -415,18 +373,12 @@ class _Period(BaseModel):
     )
 
 
-class _Prefix(BaseModel):
+class _Prefix(BaseModel, OccurrenceStatsMixin):
     """
     Lorem ipsum
     """
 
     n: str = Field(..., alias="n", description="", example="mu.na")
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=2)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=100
-    )
 
     # Reference data
     id: str = Field(
@@ -463,7 +415,7 @@ class _SeeCompound(BaseModel):
     eref: str = Field(..., alias="eref", description="", example="o0043043")
 
 
-class _Signature(BaseModel):
+class _Signature(BaseModel, OccurrenceStatsMixin):
     """
     Lorem ipsum
     """
@@ -476,12 +428,6 @@ class _Signature(BaseModel):
     )
     cof_data: _CompoundOrthographicForm = Field(
         None, alias="cof-data", description="CofData object"
-    )
-
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=4)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=57
     )
 
     # Reference data
@@ -497,7 +443,7 @@ class _Signature(BaseModel):
     type: str = Field(..., alias="type", description="Type of entry", example="sig")
 
 
-class _Sense(BaseModel):
+class _Sense(BaseModel, OccurrenceStatsMixin):
     """
     Senses are indicative of the range of meanings of words.
 
@@ -539,12 +485,6 @@ class _Sense(BaseModel):
         ..., alias="sigs", description="List of Signature objects"
     )
 
-    # Occurrence data
-    count: int = Field(..., alias="icount", description="Instance count", example=1314)
-    percent_of_instances: int = Field(
-        ..., alias="ipct", description="Instance percentage", example=99
-    )
-
     # Reference data
     id: str = Field(
         ..., alias="id", description="Unique identifier", example="sux.x0139035"
@@ -565,7 +505,7 @@ class _Sense(BaseModel):
 # TODO: Field(title="")
 
 
-class _Entry(BaseModel, OccurrenceStatsMixin):
+class Entry(BaseModel, OccurrenceStatsMixin):
     """
     Lorem ipsum
     """
@@ -614,6 +554,7 @@ class _Entry(BaseModel, OccurrenceStatsMixin):
 
     # Always empty
     morphology_2: List[_Morphology] = Field(..., alias="morph2s")
+    stems: List[str] = Field(..., alias="stems", description="List of stems")
 
     normalized: List[_Normalization] = Field(..., alias="norms")
     periods: List[_Period] = Field(..., alias="periods")
@@ -622,7 +563,6 @@ class _Entry(BaseModel, OccurrenceStatsMixin):
     senses: List[_Sense] = Field(
         ..., alias="senses", description="List of Sense objects"
     )
-    stems: List[str] = Field(..., alias="stems", description="List of stems")
 
     # Reference data
     id: str = Field(
@@ -649,7 +589,7 @@ class Glossary(OraccFileBase):
     """
 
     lang: str = Field("", alias="lang", description="", example="sux")
-    entries: List[_Entry] = Field("", alias="entries", description="", example=[])
+    entries: List[Entry] = Field("", alias="entries", description="", example=[])
     instances: Dict[str, List[str]] = Field(
         "", alias="instances", description="sux-id -> list", example=[]
     )
