@@ -2,14 +2,14 @@
 """
 from typing import Any, Dict, List
 from pydantic import Field, model_validator
-from oracc.epsd2.models.utils import (
+from pyoracc.epsd2.models.utils import (
     BaseModel,
     OraccFileBase,
     PeriodEnum,
     PartOfSpeechEnum,
     OccurrenceStatsMixin,
 )
-from oracc.epsd2.utils import load_json
+from pyoracc.utils import load_json
 
 
 class _Base(BaseModel, OccurrenceStatsMixin):
