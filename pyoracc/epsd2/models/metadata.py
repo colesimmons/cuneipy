@@ -3,7 +3,7 @@
 from typing import Dict
 from pydantic import Field
 from pyoracc.epsd2.models.utils import BaseModel, OraccFileBase
-from pyoracc.utils import load_json
+from pyoracc.epsd2.utils import load_json
 
 
 # Config class

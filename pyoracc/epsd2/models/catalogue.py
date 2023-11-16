@@ -3,7 +3,7 @@
 from typing import Dict, List
 from pydantic import Field
 from pyoracc.epsd2.models.utils import BaseModel, OraccFileBase
-from pyoracc.utils import load_json
+from pyoracc.epsd2.utils import load_json
 
 
 class _CatalogueItem(BaseModel):

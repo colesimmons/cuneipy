@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Corpus(Enum):
+class CorpusType(Enum):
     """
     Enum class representing the available corpora in the ORACC project.
     """
@@ -28,33 +28,33 @@ class Corpus(Enum):
         Raises:
           ValueError: If the corpus is invalid.
         """
-        if self is Corpus.ED12:
+        if self is CorpusType.ED12:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin-ed12.zip"
-        elif self is Corpus.ED3A:
+        elif self is CorpusType.ED3A:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin-ed3a.zip"
-        elif self is Corpus.ED3B:
+        elif self is CorpusType.ED3B:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin-ed3b.zip"
-        elif self is Corpus.EBLA:
+        elif self is CorpusType.EBLA:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin-ebla.zip"
-        elif self is Corpus.OAKK:
+        elif self is CorpusType.OAKK:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin-oakk.zip"
-        elif self is Corpus.UR3:
+        elif self is CorpusType.UR3:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin-ur3.zip"
-        elif self is Corpus.LAGASH2:
+        elif self is CorpusType.LAGASH2:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin-lagash2.zip"
-        elif self is Corpus.OLDBAB:
+        elif self is CorpusType.OLDBAB:
             return "http://oracc.museum.upenn.edu/json/epsd2-admin/oldbab.zip"
-        elif self is Corpus.EARLYLIT:
+        elif self is CorpusType.EARLYLIT:
             return "http://oracc.museum.upenn.edu/json/epsd2-earlylit.zip"
-        elif self is Corpus.LITERARY:
+        elif self is CorpusType.LITERARY:
             return "http://oracc.museum.upenn.edu/json/epsd2-literary.zip"
-        elif self is Corpus.ROYAL:
+        elif self is CorpusType.ROYAL:
             return "http://oracc.museum.upenn.edu/json/epsd2-royal.zip"
-        elif self is Corpus.PRAXIS:
+        elif self is CorpusType.PRAXIS:
             return "http://oracc.museum.upenn.edu/json/epsd2-praxis.zip"
-        elif self is Corpus.PRAXIS_UDUGHUL:
+        elif self is CorpusType.PRAXIS_UDUGHUL:
             return "http://oracc.museum.upenn.edu/json/epsd2-praxis-udughul.zip"
-        elif self is Corpus.PRAXIS_VARIA:
+        elif self is CorpusType.PRAXIS_VARIA:
             return "http://oracc.museum.upenn.edu/json/epsd2-praxis-varia.zip"
         else:
             raise ValueError("Invalid corpus")

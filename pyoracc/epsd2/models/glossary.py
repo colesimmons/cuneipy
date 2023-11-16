@@ -9,7 +9,7 @@ from pyoracc.epsd2.models.utils import (
     PartOfSpeechEnum,
     OccurrenceStatsMixin,
 )
-from pyoracc.utils import load_json
+from pyoracc.epsd2.utils import load_json
 
 
 class _Base(BaseModel, OccurrenceStatsMixin):

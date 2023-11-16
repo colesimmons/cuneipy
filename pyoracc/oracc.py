@@ -2,8 +2,9 @@ import os
 from typing import List
 import requests
 import zipfile
-from .constants import Corpus
-from .exceptions import DownloadError, ExtractionError
+from .corpus.constants import CorpusType
+from .corpus.exceptions import DownloadError, ExtractionError
+from .corpus.models.corpus import Corpus
 
 
 class Oracc:
@@ -11,27 +12,36 @@ class Oracc:
     #  Corpus
     # -----------
 
-    _corpus_download_path = "./corpusdata"
+    _corpus_download_path = "./.corpusdata"
 
     @property
-    def corpora(self) -> List[str]:
+    def corpus_names(self) -> List[str]:
         """
         Returns a list of available corpora in Oracc.
         """
-        return [corpus.value for corpus in Corpus]
+        return [corpus.value for corpus in CorpusType]
 
-    def download_corpus(self, corpus: Corpus) -> None:
+    def download_corpus(self, corpus_name: str) -> None:
         """
         Downloads and extracts a corpus from the Oracc website.
 
         Args:
-            corpus (Corpus): The corpus to download.
+            corpus_name (str): The corpus to download.
 
         Raises:
             DownloadError: If the download fails.
             ExtractionError: If the extraction fails.
         """
+        try:
+            corpus = CorpusType(corpus_name)
+        except ValueError:
+            raise ValueError(
+                f"Invalid corpus: {corpus_name}. Valid options: {self.corpora}"
+            ) from None
+
         url = corpus.get_download_url()
+
+        os.makedirs(self._corpus_download_path, exist_ok=True)
 
         zip_file_name = os.path.basename(url)
         zip_file_path = os.path.join(self._corpus_download_path, zip_file_name)
@@ -64,16 +74,29 @@ class Oracc:
         # Remove the .zip
         os.remove(zip_file_path)
 
-    def load_corpus(self, corpus: Corpus):
+    def load_corpus(self, corpus_name: str) -> List[Corpus]:
         """
         Loads a corpus from the Oracc website.
 
         Args:
-            corpus (Corpus): The corpus to load.
+            corpus_name (str): Name of the corpus to load.
         """
+        try:
+            corpus = CorpusType(corpus_name)
+        except ValueError:
+            raise ValueError(
+                f"Invalid corpus: {corpus_name}. Valid options: {self.corpora}"
+            ) from None
+
         extracted_folder_path = os.path.join(self._corpus_download_path, corpus.value)
 
         if not os.path.exists(extracted_folder_path):
             raise ValueError(f"Corpus {corpus} has not been downloaded yet.")
 
-        return
+        dirs = _find_corpusjson_dirs(extracted_folder_path)
+        return Corpus.load(dirs[0])
+
+
+def _find_corpusjson_dirs(root_dir: str):
+    """Search for the 'corpusjson' dir paths"""
+    return [root for root, _, filenames in os.walk(root_dir) if "catalogue.json" in filenames]
