@@ -2,7 +2,7 @@ import os
 from typing import List
 import requests
 import zipfile
-from .corpus.constants import CorpusType
+from .corpus.enums import CorpusType
 from .corpus.exceptions import DownloadError, ExtractionError
 from .corpus.models.corpus import Corpus
 
@@ -99,4 +99,8 @@ class Oracc:
 
 def _find_corpusjson_dirs(root_dir: str):
     """Search for the 'corpusjson' dir paths"""
-    return [root for root, _, filenames in os.walk(root_dir) if "catalogue.json" in filenames]
+    return [
+        root
+        for root, _, filenames in os.walk(root_dir)
+        if "catalogue.json" in filenames
+    ]
