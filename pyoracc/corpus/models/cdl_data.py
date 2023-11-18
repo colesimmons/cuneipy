@@ -1,19 +1,31 @@
-from typing import Any, Dict, List, Literal, Optional, Union, TypeAlias, ForwardRef
+from enum import Enum
+from typing import Any, Dict, List, Literal, Union, ForwardRef
 
 from typing_extensions import Annotated
 
-from pydantic import BaseModel, Discriminator, Field, Tag
+from pydantic import BaseModel, Field, Tag
 
 
 ####################
 # Discontinuity
 ####################
-class Discontinuity(BaseModel):
-    # type = "cell-end" | "cell-start" | "column" | "field-end" | "field-start" | "line-start" | "nonw" | "nonx" | "object" | "surface"
+class DiscontinuityType(Enum):
+    CELL_START = "cell-start"
+    CELL_END = "cell-end"
+    COLUMN = "column"
+    FIELD_START = "field-start"
+    FIELD_END = "field-end"
+    LINE_START = "line-start"
+    NONW = "nonw"  # TODO ?
+    NONX = "nonx"  # TODO ?
+    OBJECT = "object"
+    SURFACE = "surface"
 
+
+class Discontinuity(BaseModel):
     # Required
     node: Literal["d"]
-    type_: str = Field(..., alias="type")
+    type_: DiscontinuityType = Field(..., alias="type")
 
     # Optional
     label: str = Field("")
@@ -34,11 +46,23 @@ class Discontinuity(BaseModel):
 ####################
 # Lemma
 ####################
+class ParaClass(Enum):
+    SYNTAX = "syntax"
+    BOUNDARY = "boundary"
+    POINTER = "pointer"
+
+
+class ParaType(Enum):
+    AND = "and"
+    SENTENCE = "sentence"
+    NO_SENTENCE = "no sentence"
+    LABEL = "label"
+    POINTER_REF = "pointer_ref"
+
+
 class Para(BaseModel):
-    class_: str = Field(..., alias="class")  # syntax | boundary | pointer
-    type_: str = Field(
-        ..., alias="type"
-    )  # and | sentence | no sentence | label | pointer_ref
+    class_: ParaClass = Field(..., alias="class")
+    type_: ParaType = Field(..., alias="type")
     text: str = Field(...)
     val: str = Field(...)  # empty str
     bracketing_level: str = Field(...)  # "0"
@@ -116,12 +140,17 @@ CDLNode = Annotated[
 ]
 
 
-class Chunk(BaseModel):
-    # type = "discourse" | "phrase" | "sentence" | "text"
+class ChunkType(Enum):
+    DISCOURSE = "discourse"
+    PHRASE = "phrase"
+    SENTENCE = "sentence"
+    TEXT = "text"
 
+
+class Chunk(BaseModel):
     # Required
     node: Literal["c"]
-    type_: str = Field(..., alias="type")
+    type_: ChunkType = Field(..., alias="type")
     id_: str = Field(..., alias="id")
 
     # Optional

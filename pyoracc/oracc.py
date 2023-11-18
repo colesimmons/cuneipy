@@ -94,7 +94,7 @@ class Oracc:
             raise ValueError(f"Corpus {corpus} has not been downloaded yet.")
 
         dirs = _find_corpusjson_dirs(extracted_folder_path)
-        return Corpus.load(dirs[0])
+        return Corpus.load(corpus, dirs[0])
 
 
 def _find_corpusjson_dirs(root_dir: str):

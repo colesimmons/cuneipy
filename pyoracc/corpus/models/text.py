@@ -1,3 +1,7 @@
+"""
+Defines:
+- Text
+"""
 import json
 from typing import List, Dict, Any, Optional, Union
 
@@ -12,7 +16,7 @@ from pyoracc.corpus.enums import (
     SupergenreEnum,
     XProjectEnum,
 )
-from pyoracc.corpus.models.text_data import (
+from pyoracc.corpus.models.cdl_data import (
     CDLNode,
     Chunk,
     Discontinuity,
@@ -22,15 +26,16 @@ from pyoracc.corpus.models.text_data import (
 )
 
 
-class Text(BaseModel):
+class BaseText(BaseModel):
     # TODO: Find out how often below fields are defined
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid")  # TODO add this to other models
     dir_path: str
 
     cdl: List[CDLNode] = []
 
     # Metadata
-    id_text: str
+    id_text: str = ""
+    designation: str = ""  # almost always defined
     language: LanguageEnum = LanguageEnum.UNSPECIFIED
     object_type: ObjectTypeEnum = ObjectTypeEnum.UNSPECIFIED
     period: PeriodEnum = PeriodEnum.UNSPECIFIED
@@ -62,53 +67,6 @@ class Text(BaseModel):
     uri: str = ""
     xproject: XProjectEnum = ""
 
-    # Less standard
-    acquisition_history: str = ""
-    ark_number: str = ""
-    atf_source: str = ""
-    atf_up: str = ""
-    author: str = ""
-    author_remarks: str = ""
-    cdli_comments: str = ""
-    chap: str = ""
-    citation: str = ""
-    collection: str = ""
-    date_entered: str = ""
-    date_remarks: str = ""
-    date_updated: str = ""
-    dates_referenced: str = ""
-    db_source: str = ""
-    designation: str = ""
-    distribution: str = ""
-    electronic_publication: str = ""
-    external_id: str = ""
-    google_earth_collection: str = ""
-    height: str = ""
-    id_: str = Field("", alias="id")
-    id_composite: str = ""
-    id_text_int: str = ""
-    id_text: str = ""
-    keywords: str = ""
-    lineart_up: str = ""
-    material: str = ""
-    object_remarks: str = ""
-    photo_up: str = ""
-    place: str = ""
-    primary_edition: str = ""
-    provdist: str = ""
-    provenience_remarks: str = ""
-    publication_date: str = ""
-    published_collation: str = ""
-    ruler: str = ""
-    sec1: str = ""
-    sec2: str = ""
-    seal_id: str = ""
-    seal_information: str = ""
-    sources: str = ""
-    subgenre_remarks: str = ""
-    thickness: str = ""
-    translation_source: str = ""
-    width: str = ""
 
     # TODO: are there members in catalogue that aren't in corpusjson/?
     # TODO: are there files in corpusjson/ that aren't in catalogue?
@@ -144,3 +102,109 @@ def parse_node(node):
         return LinkbaseNode(**node)
     else:
         raise ValueError(f"Unknown node type: {node_type}")
+
+
+class EarlyLitText(BaseText):
+    id_composite: str = ""
+    keywords: str = ""
+    place: str = ""
+
+
+class Ed3aText(BaseText):
+    pass
+
+
+class Ed3bText(BaseText):
+    pass
+
+
+class Ed12Text(BaseText):
+    pass
+
+
+class Lagash2Text(BaseText):
+    pass
+
+
+class LiteraryText(BaseText):
+    chap: str = ""
+    distribution: str = ""
+    id_composite: str = ""
+    keywords: str = ""
+    place: str = ""
+    provdist: str = ""
+    sec1: str = ""
+    sec2: str = ""
+    sources: str = ""
+
+
+class OakkText(BaseText):
+    pass
+
+
+class PraxisText(BaseText):
+    pass
+
+
+class PraxisUdughulText(BaseText):
+    pass
+
+
+class PraxisVariaText(BaseText):
+    pass
+
+
+class RoyalText(BaseText):
+    distribution: str = ""
+    id_composite: str = ""
+    keywords: str = ""
+    place: str = ""
+    primary_edition: str = ""
+    provdist: str = ""
+    ruler: str = ""
+    sources: str = ""
+
+
+class Ur3Text(BaseText):
+    pass
+
+
+class Ur3Text(BaseText):
+    """
+    Adds a number of fields that are only defined on Ur III texts,
+    and a very small percentage of them at that.
+    """
+
+    acquisition_history: str = ""
+    ark_number: str = ""
+    atf_source: str = ""
+    atf_up: str = ""
+    author: str = ""
+    author_remarks: str = ""
+    cdli_comments: str = ""
+    citation: str = ""
+    collection: str = ""
+    date_entered: str = ""
+    date_remarks: str = ""
+    date_updated: str = ""
+    dates_referenced: str = ""
+    db_source: str = ""
+    electronic_publication: str = ""
+    external_id: str = ""
+    google_earth_collection: str = ""
+    height: str = ""
+    id_: str = Field("", alias="id")
+    id_text_int: str = ""
+    lineart_up: str = ""
+    material: str = ""
+    object_remarks: str = ""
+    photo_up: str = ""
+    provenience_remarks: str = ""
+    publication_date: str = ""
+    published_collation: str = ""
+    seal_id: str = ""
+    seal_information: str = ""
+    subgenre_remarks: str = ""
+    thickness: str = ""
+    translation_source: str = ""
+    width: str = ""
