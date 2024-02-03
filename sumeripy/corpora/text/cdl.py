@@ -1,15 +1,37 @@
-from enum import Enum
-from typing import Any, Dict, List, Literal, Union, ForwardRef
+"""
+Functions:
+    parse_cdl_node
 
+Classes:
+    DiscontinuityType
+    Discontinuity
+    ParaClass
+    ParaType
+    Para
+    Lemma
+    LLNode
+    LinkbaseNode
+    CDLNode
+    ChunkType
+    Chunk
+"""
+
+from enum import Enum
+from typing import Any, Dict, List, Literal, Union
 from typing_extensions import Annotated
 
-from pydantic import BaseModel, Field, Tag
+from pydantic import BaseModel, ConfigDict, Field, Extra, Tag
 
 
-####################
-# Discontinuity
-####################
+# ---------------  CLASSES ---------------
+
+
+# ====================
+# == Discontinuity ===
+# ====================
 class DiscontinuityType(Enum):
+    """ """
+
     CELL_START = "cell-start"
     CELL_END = "cell-end"
     COLUMN = "column"
@@ -23,11 +45,16 @@ class DiscontinuityType(Enum):
 
 
 class Discontinuity(BaseModel):
+    """ """
+
+    model_config = ConfigDict(extra=Extra.forbid)
+
     # Required
     node: Literal["d"]
     type_: DiscontinuityType = Field(..., alias="type")
 
     # Optional
+    ref: str = Field("")
     label: str = Field("")
     n: str = Field("")
     subtype: str = Field("")
@@ -43,24 +70,33 @@ class Discontinuity(BaseModel):
     o: str = Field("")
 
 
-####################
-# Lemma
-####################
+# ====================
+# ====   Lemma    ====
+# ====================
 class ParaClass(Enum):
+    """ """
+
     SYNTAX = "syntax"
     BOUNDARY = "boundary"
     POINTER = "pointer"
 
 
 class ParaType(Enum):
+    """ """
+
     AND = "and"
     SENTENCE = "sentence"
     NO_SENTENCE = "no sentence"
+    NO_SENTENCE_2 = "no_sentence"
     LABEL = "label"
     POINTER_REF = "pointer_ref"
 
 
 class Para(BaseModel):
+    """ """
+
+    model_config = ConfigDict(extra=Extra.forbid)
+
     class_: ParaClass = Field(..., alias="class")
     type_: ParaType = Field(..., alias="type")
     text: str = Field(...)
@@ -69,6 +105,10 @@ class Para(BaseModel):
 
 
 class Lemma(BaseModel):
+    """ """
+
+    model_config = ConfigDict(extra=Extra.forbid)
+
     # Required
     node: Literal["l"]
     id_: str = Field(..., alias="id")
@@ -96,10 +136,14 @@ class Lemma(BaseModel):
     bad: str = Field("")
 
 
-####################
-# Other
-####################
+# ====================
+# ====   Other    ====
+# ====================
 class LLNode(BaseModel):  # only 50 of these
+    """ """
+
+    model_config = ConfigDict(extra=Extra.forbid)
+
     # Required
     node: Literal["ll"]
     id_: str = Field(alias="id")
@@ -111,21 +155,51 @@ class LLNode(BaseModel):  # only 50 of these
 
 
 class LinkbaseNode(BaseModel):  # only 50 of these
+    """ """
+
     linkbase: Any
 
 
-####################
-# Chunk
-####################
-Chunk = ForwardRef("Chunk")
-
-
-def get_node_type(node: Any):
+# ====================
+# ====  CDLNode   ====
+# ====================
+def _get_node_type(node: Any):
     if "node" in node:
         return node["node"]
     if "linkbase" in node:
         return "linkbase"
     return None
+
+
+# ====================
+# ====   Chunk    ====
+# ====================
+class ChunkType(Enum):
+    """ """
+
+    DISCOURSE = "discourse"
+    PHRASE = "phrase"
+    SENTENCE = "sentence"
+    TEXT = "text"
+
+
+class Chunk(BaseModel):
+    """ """
+
+    model_config = ConfigDict(extra=Extra.forbid)
+
+    # Required
+    node: Literal["c"]
+    type_: ChunkType = Field(..., alias="type")
+    id_: str = Field(..., alias="id")
+
+    # Optional
+    cdl: List["CDLNode"] = []
+    implicit: bool = False
+    label: str = Field("")
+    ref: str = Field("")
+    subtype: str = Field("")
+    tag: str = Field("")
 
 
 CDLNode = Annotated[
@@ -136,27 +210,30 @@ CDLNode = Annotated[
         Annotated[LLNode, Tag("ll")],
         Annotated[LinkbaseNode, Tag("linkbase")],
     ],
-    Field(get_node_type),
+    Field(_get_node_type),
 ]
 
-
-class ChunkType(Enum):
-    DISCOURSE = "discourse"
-    PHRASE = "phrase"
-    SENTENCE = "sentence"
-    TEXT = "text"
+Chunk.model_rebuild()
 
 
-class Chunk(BaseModel):
-    # Required
-    node: Literal["c"]
-    type_: ChunkType = Field(..., alias="type")
-    id_: str = Field(..., alias="id")
+# ---------------  FUNCTIONS ---------------
 
-    # Optional
-    cdl: List[CDLNode] = []
-    implicit: bool = False
-    label: str = Field("")
-    ref: str = Field("")
-    subtype: str = Field("")
-    tag: str = Field("")
+
+def parse_cdl_node(node):
+    node_type = node.get("node", "")
+
+    if "cdl" in node:
+        node["cdl"] = [parse_cdl_node(n) for n in node["cdl"]]
+
+    if node_type == "c":
+        return Chunk(**node)
+    if node_type == "d":
+        return Discontinuity(**node)
+    if node_type == "l":
+        return Lemma(**node)
+    if node_type == "ll":
+        return LLNode(**node)
+    if "linkbase" in node:
+        return LinkbaseNode(**node)
+
+    raise ValueError(f"Unknown node type: {node_type}")

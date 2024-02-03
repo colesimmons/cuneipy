@@ -1,66 +1,22 @@
+"""
+Genre: Enum class representing the genre of a text.
+Language: Enum class representing the language of a text.
+ObjectType: Enum class representing the type of object that a text appears upon.
+Period: Enum class representing the period of a text.
+Status: Enum class representing the status of a text.
+Supergenre: Enum class representing the supergenre of a text.
+XProject: Enum class representing other projects of which a text is a part.
+Subgenre: Enum class representing the subgenre of a text.
+"""
+
 from enum import Enum
 
 
-class CorpusType(Enum):
+class Genre(str, Enum):
     """
-    Enum class representing the available corpora in the ORACC project.
+    Enum class representing the genre of a text.
     """
 
-    ED12 = "ed12"
-    ED3A = "ed3a"
-    ED3B = "ed3b"
-    EBLA = "ebla"
-    OAKK = "oakk"
-    UR3 = "ur3"
-    LAGASH2 = "lagash2"
-    OLDBAB = "oldbab"
-    EARLYLIT = "earlylit"
-    LITERARY = "literary"
-    ROYAL = "royal"
-    PRAXIS = "praxis"
-    PRAXIS_UDUGHUL = "praxis_udughul"
-    PRAXIS_VARIA = "praxis_varia"
-
-    def get_download_url(self):
-        """
-        Returns the download URL for the given corpus.
-
-        Raises:
-          ValueError: If the corpus is invalid.
-        """
-        if self is CorpusType.ED12:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin-ed12.zip"
-        elif self is CorpusType.ED3A:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin-ed3a.zip"
-        elif self is CorpusType.ED3B:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin-ed3b.zip"
-        elif self is CorpusType.EBLA:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin-ebla.zip"
-        elif self is CorpusType.OAKK:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin-oakk.zip"
-        elif self is CorpusType.UR3:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin-ur3.zip"
-        elif self is CorpusType.LAGASH2:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin-lagash2.zip"
-        elif self is CorpusType.OLDBAB:
-            return "http://oracc.museum.upenn.edu/json/epsd2-admin/oldbab.zip"
-        elif self is CorpusType.EARLYLIT:
-            return "http://oracc.museum.upenn.edu/json/epsd2-earlylit.zip"
-        elif self is CorpusType.LITERARY:
-            return "http://oracc.museum.upenn.edu/json/epsd2-literary.zip"
-        elif self is CorpusType.ROYAL:
-            return "http://oracc.museum.upenn.edu/json/epsd2-royal.zip"
-        elif self is CorpusType.PRAXIS:
-            return "http://oracc.museum.upenn.edu/json/epsd2-praxis.zip"
-        elif self is CorpusType.PRAXIS_UDUGHUL:
-            return "http://oracc.museum.upenn.edu/json/epsd2-praxis-udughul.zip"
-        elif self is CorpusType.PRAXIS_VARIA:
-            return "http://oracc.museum.upenn.edu/json/epsd2-praxis-varia.zip"
-        else:
-            raise ValueError("Invalid corpus")
-
-
-class GenreEnum(str, Enum):
     ADMINISTRATIVE = "Administrative"
     ASTRONOMICAL = "Astronomical"
     HYMN_PRAYER = "Hymn-Prayer"
@@ -80,7 +36,11 @@ class GenreEnum(str, Enum):
     UNSPECIFIED = ""
 
 
-class LanguageEnum(str, Enum):
+class Language(str, Enum):
+    """
+    Enum class representing the language of a text.
+    """
+
     AKKADIAN = "Akkadian"
     NON_SUMERIAN_EBLAITE = "non-Sumerian (Eblaite)"
     NON_SUMERIAN_UNDET = "non-Sumerian (undetermined)"
@@ -89,7 +49,11 @@ class LanguageEnum(str, Enum):
     UNSPECIFIED = ""
 
 
-class ObjectTypeEnum(str, Enum):
+class ObjectType(str, Enum):
+    """
+    Enum class representing the type of object that a text appears upon.
+    """
+
     BARREL = "barrel"
     BRAND = "Brand"
     BRICK = "brick"
@@ -130,7 +94,11 @@ class ObjectTypeEnum(str, Enum):
     UNSPECIFIED = ""
 
 
-class PeriodEnum(str, Enum):
+class Period(str, Enum):
+    """
+    Enum class representing the period of a text.
+    """
+
     EARLY_DYNASTIC_I_II = "Early Dynastic I-II"
     EARLY_DYNASTIC_III_A = "Early Dynastic IIIa"
     EARLY_DYNASTIC_III_B = "Early Dynastic IIIb"
@@ -149,16 +117,24 @@ class PeriodEnum(str, Enum):
     UNSPECIFIED = ""
 
 
-class StatusEnum(str, Enum):
-    A = "A"
+class Status(str, Enum):
+    """
+    Enum class representing the status of a text.
+    """
+
+    A = "A"  # TODO
     D = "D"
     I = "I"
     UNSPECIFIED = ""
 
 
-class SupergenreEnum(str, Enum):
-    ELA = "ELA"
-    LEX = "LEX"
+class Supergenre(str, Enum):
+    """
+    Enum class representing the supergenre of a text.
+    """
+
+    ELA = "ELA"  # TODO
+    LEXICAL = "LEX"
     LIT = "LIT"
     STL = "STL"
     UNKNOWN = "unknown"
@@ -166,12 +142,21 @@ class SupergenreEnum(str, Enum):
     UNSPECIFIED = ""
 
 
-class XProjectEnum(str, Enum):
+class XProject(str, Enum):
+    """
+    Enum class representing other projects of which a text is a part.
+    """
+
     CDLI = "CDLI"
+    UNSPECIFIED = ""
 
 
 # TODO
-class SubgenreEnum(str, Enum):
+class Subgenre(str, Enum):
+    """
+    Enum class representing the subgenre of a text.
+    """
+
     ADMINISTRATIVE = "administrative"
     ADMINISTRATIVE_2 = "Administrative"
     ASJ = "ASJ 8, 107 27"

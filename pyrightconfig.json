@@ -1,0 +1,19 @@
+{
+  "include": [
+    "sumeripy/**/*.py"
+  ],
+  "exclude": [
+    "**/__pycache__"
+  ],
+  "reportMissingImports": true,
+  "reportUnusedClass": true,
+  "reportUnusedFunction": true,
+  "reportUnusedImport": true,
+  "reportUnusedVariable": true,
+  "strict": false,
+  "typeshedPath": "",
+  "pythonVersion": "3.11",
+  "pythonPlatform": "Linux",
+  "venvPath": "./",
+  "venv": ".venv"
+}
