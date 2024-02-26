@@ -4,17 +4,16 @@ download()
 load()
 """
 
+import json
 import os
-from typing import List
 import zipfile
 from pathlib import Path
-import json
+from typing import List
 
 import requests
 
-from .corpus import Corpus, CorpusType
 from ..exceptions import DownloadError, ExtractionError
-
+from .corpus import Corpus, CorpusType
 
 _CORPUS_DOWNLOAD_PATH = "./.corpusdata"
 

@@ -106,7 +106,7 @@ class TextBase(BaseModel):
         for surface in surfaces:
             # If it starts with "$LINE$", drop it
             # if surface.startswith("$LINE$"):
-                #surface = surface[6:]
+            # surface = surface[6:]
             surface = surface.replace("$LINE$", "\n")
             surface_texts.append("==SURFACE== \n" + surface)
 
@@ -129,6 +129,7 @@ def _discontinuity_to_text(node: Discontinuity) -> Optional[str]:
         return "\n $MISSING_LINES$ \n"
     return None
 
+
 def _extract_text_from_node(node: CDLNode) -> Optional[str]:
     if type(node) == Discontinuity:
         return _discontinuity_to_text(node)
@@ -136,19 +137,20 @@ def _extract_text_from_node(node: CDLNode) -> Optional[str]:
         if node.frag:
             return node.frag
         # Going to have to pull it off the gdl
-        if node.f and node.f['form']:
-            return node.f['form']
+        if node.f and node.f["form"]:
+            return node.f["form"]
         raise ValueError(f"Could not find text for lemma node: {node}")
 
     return None
+
 
 def _crawl_cdl_for_text(cdl: List[CDLNode]) -> List[str]:
     current_tokens: List[str] = []
 
     for node in cdl:
         if type(node) == Chunk:
-                tokens = _crawl_cdl_for_text(node.cdl)
-                current_tokens += tokens
+            tokens = _crawl_cdl_for_text(node.cdl)
+            current_tokens += tokens
         else:
             text = _extract_text_from_node(node)
             if text:

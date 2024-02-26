@@ -124,7 +124,7 @@ class Status(str, Enum):
 
     A = "A"  # TODO
     D = "D"
-    I = "I"
+    I_STATUS = "I"
     UNSPECIFIED = ""
 
 

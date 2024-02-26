@@ -5,7 +5,6 @@ __all__ = [
     "list",
     "download",
     "load",
-
     "corpus",
     "text",
 ]
