@@ -44,7 +44,7 @@ from typing import Dict, Generic, List, Set, TypeVar
 
 from pydantic import BaseModel
 
-from .types import Text
+from ..text import Text
 
 T = TypeVar("T", bound=Text)
 

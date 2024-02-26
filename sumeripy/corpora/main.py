@@ -1,7 +1,7 @@
 """
-get_corpus_names
-download_corpus
-load
+list()
+download()
+load()
 """
 
 import os
@@ -19,7 +19,7 @@ from ..exceptions import DownloadError, ExtractionError
 _CORPUS_DOWNLOAD_PATH = "./.corpusdata"
 
 
-def get_corpus_names() -> List[str]:
+def list() -> List[str]:
     """
     Returns:
         corpora - a list of available corpora in Oracc
@@ -27,7 +27,7 @@ def get_corpus_names() -> List[str]:
     return [corpus.value for corpus in CorpusType]
 
 
-def download_corpus(corpus_name: str) -> None:
+def download(corpus_name: str) -> None:
     """
     Downloads and extracts a corpus from the Oracc website.
 
@@ -43,7 +43,7 @@ def download_corpus(corpus_name: str) -> None:
     try:
         corpus_type = CorpusType(corpus_name)
     except ValueError:
-        corpus_names = get_corpus_names()
+        corpus_names = list()
         raise ValueError(
             f"Invalid corpus: {corpus_name}. Valid options: {corpus_names}"
         ) from None
@@ -56,6 +56,7 @@ def download_corpus(corpus_name: str) -> None:
     extracted_folder_path = os.path.join(_CORPUS_DOWNLOAD_PATH, corpus_type.value)
 
     if os.path.exists(extracted_folder_path):
+        print(f"Corpus {corpus_name} has already been downloaded.")
         return
 
     # Download the .zip
@@ -83,7 +84,7 @@ def download_corpus(corpus_name: str) -> None:
     os.remove(zip_file_path)
 
 
-def load_corpus(corpus_name: str) -> Corpus:
+def load(corpus_name: str) -> Corpus:
     """
     Load a corpus by its name.
 
@@ -99,7 +100,7 @@ def load_corpus(corpus_name: str) -> Corpus:
     try:
         corpus = CorpusType(corpus_name)
     except ValueError:
-        corpus_names = get_corpus_names()
+        corpus_names = list()
         raise ValueError(
             f"Invalid corpus: {corpus_name}. Valid options: {corpus_names}"
         ) from None

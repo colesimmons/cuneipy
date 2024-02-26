@@ -1,5 +1,5 @@
 from .corpus_base import CorpusBase
-from .text_other import (
+from ..text import (
     TextIncantations,
     TextLiturgies,
     TextRoyal,

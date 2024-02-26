@@ -10,6 +10,10 @@ class TextLiteraryEarly(TextBase):
     keywords: str = ""
     place: str = ""
 
+    @property
+    def file_id(self) -> str:
+        return self.id_composite if self.id_composite else self.id_text
+
 
 class TextLiteraryOldBab(TextBase):
     """
@@ -25,3 +29,7 @@ class TextLiteraryOldBab(TextBase):
     sec1: str = ""
     sec2: str = ""
     sources: str = ""
+
+    @property
+    def file_id(self) -> str:
+        return self.id_composite if self.id_composite else self.id_text

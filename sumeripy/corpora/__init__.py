@@ -1,7 +1,11 @@
-from .main import get_corpus_names, download_corpus, load_corpus
+from .main import list, download, load
+from . import corpus, text
 
 __all__ = [
-    "get_corpus_names",
-    "download_corpus",
-    "load_corpus",
+    "list",
+    "download",
+    "load",
+
+    "corpus",
+    "text",
 ]

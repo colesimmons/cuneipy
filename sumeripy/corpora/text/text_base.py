@@ -5,10 +5,12 @@ These are attributes shared by texts in all corpora.
 """
 
 import json
-from typing import List
+from typing import List, Optional
+import re
 
 from pydantic import BaseModel, ConfigDict
-from .cdl import CDLNode, parse_cdl_node
+
+from .cdl import CDLNode, Chunk, Discontinuity, DiscontinuityType, Lemma, parse_cdl_node
 from .enums import (
     Genre,
     Language,
@@ -60,6 +62,10 @@ class TextBase(BaseModel):
     uri: str = ""
     xproject: XProject = XProject.UNSPECIFIED
 
+    @property
+    def file_id(self) -> str:
+        return self.id_text
+
     # TODO: are there members in catalogue that aren't in corpusjson/?
     # TODO: are there files in corpusjson/ that aren't in catalogue?
     # TODO: use timestamp
@@ -72,12 +78,80 @@ class TextBase(BaseModel):
         Returns:
             None
         """
-        if not self.id_text:  # TODO
-            self.cdl = []
-            return
 
-        text_path = f"{self.dir_path}/{self.id_text}.json"
+        if not self.file_id:
+            raise ValueError("no file id: ", self.model_dump())
+
+        text_path = f"{self.dir_path}/{self.file_id}.json"
         with open(text_path, "r", encoding="utf-8") as f:
             text_data = json.load(f)
         self.cdl = [parse_cdl_node(node) for node in text_data["cdl"]]
-        return text_data
+
+    def transliteration(self) -> str:
+        """
+        Return the transliteration of the text.
+
+        Returns:
+            str: The transliteration of the text.
+        """
+        tokens = _crawl_cdl_for_text(self.cdl)
+        text = " ".join(tokens)
+
+        # Drop empty surfaces
+        surfaces = text.split("$SURFACE$")
+        surfaces = [s.strip() for s in surfaces if s.strip()]
+
+        # Drop the first line start, replace others with newlines
+        surface_texts = []
+        for surface in surfaces:
+            # If it starts with "$LINE$", drop it
+            # if surface.startswith("$LINE$"):
+                #surface = surface[6:]
+            surface = surface.replace("$LINE$", "\n")
+            surface_texts.append("==SURFACE== \n" + surface)
+
+        new_text = "\n".join(surface_texts)
+
+        # Replace any repeated sequence of " \n " with a single " \n "
+        new_text = re.sub(r"( *\n+ *)+", " \n ", new_text)
+        return new_text.strip()
+
+
+def _discontinuity_to_text(node: Discontinuity) -> Optional[str]:
+    if node.type_ == DiscontinuityType.LINE_START:
+        return "$LINE$"
+    elif node.type_ == DiscontinuityType.COLUMN:
+        # return "$COL$"
+        return None
+    elif node.type_ == DiscontinuityType.SURFACE:
+        return "$SURFACE$ "
+    elif node.state == "missing" and node.scope == "line":
+        return "\n $MISSING_LINES$ \n"
+    return None
+
+def _extract_text_from_node(node: CDLNode) -> Optional[str]:
+    if type(node) == Discontinuity:
+        return _discontinuity_to_text(node)
+    if type(node) == Lemma:
+        if node.frag:
+            return node.frag
+        # Going to have to pull it off the gdl
+        if node.f and node.f['form']:
+            return node.f['form']
+        raise ValueError(f"Could not find text for lemma node: {node}")
+
+    return None
+
+def _crawl_cdl_for_text(cdl: List[CDLNode]) -> List[str]:
+    current_tokens: List[str] = []
+
+    for node in cdl:
+        if type(node) == Chunk:
+                tokens = _crawl_cdl_for_text(node.cdl)
+                current_tokens += tokens
+        else:
+            text = _extract_text_from_node(node)
+            if text:
+                current_tokens.append(text)
+
+    return current_tokens
