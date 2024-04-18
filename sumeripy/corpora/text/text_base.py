@@ -5,8 +5,8 @@ These are attributes shared by texts in all corpora.
 """
 
 import json
-from typing import List, Optional
 import re
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 

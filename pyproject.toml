@@ -14,6 +14,7 @@ requests = "^2.31.0"
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.2.2"
 pyright = "^1.1.351"
+ipykernel = "^6.29.3"
 
 [build-system]
 requires = ["poetry-core"]

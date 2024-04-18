@@ -22,6 +22,12 @@ class TextRoyal(TextBase):
     A royal text.
     """
 
+    @property
+    def file_id(self) -> str:
+        if not self.id_text:
+            return self.id_composite
+        return self.id_text
+
     distribution: str = ""
     id_composite: str = ""
     keywords: str = ""
