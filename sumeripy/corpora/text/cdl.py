@@ -18,10 +18,9 @@ Classes:
 
 from enum import Enum
 from typing import Any, Dict, List, Literal, Union
+
+from pydantic import BaseModel, ConfigDict, Extra, Field, Tag
 from typing_extensions import Annotated
-
-from pydantic import BaseModel, ConfigDict, Field, Extra, Tag
-
 
 # ---------------  CLASSES ---------------
 
@@ -85,11 +84,14 @@ class ParaType(Enum):
     """ """
 
     AND = "and"
+    BRACK_OPEN = "brack_o"
+    BRACK_CLOSE = "brack_c"
     SENTENCE = "sentence"
     NO_SENTENCE = "no sentence"
     NO_SENTENCE_2 = "no_sentence"
     LABEL = "label"
     POINTER_REF = "pointer_ref"
+    
 
 
 class Para(BaseModel):
