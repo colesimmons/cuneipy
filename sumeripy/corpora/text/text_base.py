@@ -137,10 +137,16 @@ def _extract_text_from_node(node: CDLNode) -> Optional[str]:
         text = node.frag
         if node.inst == "n":
             gdl = node.f.get("gdl", [])[0]
-            if "breakStart" in gdl and "[" not in text:
-                text = f"[{text}"
-            if "breakEnd" in gdl and "]" not in text:
-                text = f"{text}]"
+            # This is not the most precise, but it'll do...
+            # Otherwise, we end up with unbalanced brackets
+            # and there's not an easy way around that without potentially
+            # introducing many more bugs.
+            if any("breakStart" in node for node in gdl):
+                if "[" not in text:
+                    text = f"[{text}"
+            if any("breakEnd" in node for node in gdl):
+                if "]" not in text:
+                    text = f"{text}]"
         return text
 
     return None
