@@ -140,7 +140,6 @@ def _extract_text_from_node(node: CDLNode) -> Optional[str]:
                 text = f"[{text}"
             if "breakEnd" in gdl and "]" not in text:
                 text = f"{text}]"
-            print(text)
         return text
 
     return None
