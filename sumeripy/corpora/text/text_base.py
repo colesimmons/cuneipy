@@ -96,37 +96,36 @@ class TextBase(BaseModel):
         """
         tokens = _crawl_cdl_for_text(self.cdl)
         text = " ".join(tokens)
-
-        # Drop empty surfaces
-        surfaces = text.split("$SURFACE$")
-        surfaces = [s.strip() for s in surfaces if s.strip()]
-
-        # Drop the first line start, replace others with newlines
-        surface_texts = []
-        for surface in surfaces:
-            # If it starts with "$LINE$", drop it
-            # if surface.startswith("$LINE$"):
-            # surface = surface[6:]
-            surface = surface.replace("$LINE$", "\n")
-            surface_texts.append("==SURFACE== \n" + surface)
-
-        new_text = "\n".join(surface_texts)
-
-        # Replace any repeated sequence of " \n " with a single " \n "
-        new_text = re.sub(r"( *\n+ *)+", " \n ", new_text)
-        return new_text.strip()
+        surfaces = text.split("==SURFACE==")
+        surfaces = [surface.strip() for surface in surfaces if surface.strip()]
+        text = "==SURFACE==\n" + "\n==SURFACE==\n".join(surfaces)
+        text = re.sub(r"\n+", "\n", text)
+        text = re.sub(r"\ *\n\ *", "\n", text)
+        text = re.sub(r"\ +", " ", text)
+        return text.strip()
 
 
 def _discontinuity_to_text(node: Discontinuity) -> Optional[str]:
-    if node.type_ == DiscontinuityType.LINE_START:
-        return "$LINE$"
-    elif node.type_ == DiscontinuityType.COLUMN:
-        # return "$COL$"
+    if node.type_ == DiscontinuityType.OBJECT:
         return None
-    elif node.type_ == DiscontinuityType.SURFACE:
-        return "$SURFACE$ "
-    elif node.state == "missing" and node.scope == "line":
-        return "\n $MISSING_LINES$ \n"
+    if node.type_ == DiscontinuityType.LINE_START:
+        return "\n"
+    if node.type_ == DiscontinuityType.COLUMN:
+        return "==COLUMN=="
+    if node.type_ == DiscontinuityType.SURFACE:
+        return "==SURFACE=="
+
+    if node.state == "missing":
+        return "\n==MISSING==\n"
+    if node.state == "blank":
+        if node.scope == "line":
+            return "\n==MISSING==\n"
+        if node.scope == "space":
+            return "\n==BLANK_SPACE==\n"
+        return None
+    if node.state == "ruling":
+        return "\n==RULING==\n"
+
     return None
 
 
@@ -134,12 +133,15 @@ def _extract_text_from_node(node: CDLNode) -> Optional[str]:
     if type(node) == Discontinuity:
         return _discontinuity_to_text(node)
     if type(node) == Lemma:
-        if node.frag:
-            return node.frag
-        # Going to have to pull it off the gdl
-        if node.f and node.f["form"]:
-            return node.f["form"]
-        raise ValueError(f"Could not find text for lemma node: {node}")
+        text = node.frag
+        if node.inst == "n":
+            gdl = node.f.get("gdl", [])[0]
+            if "breakStart" in gdl and "[" not in text:
+                text = f"[{text}"
+            if "breakEnd" in gdl and "]" not in text:
+                text = f"{text}]"
+            print(text)
+        return text
 
     return None
 
