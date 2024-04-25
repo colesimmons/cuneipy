@@ -98,9 +98,10 @@ class TextBase(BaseModel):
         text = " ".join(tokens)
         surfaces = text.split("==SURFACE==")
         surfaces = [surface.strip() for surface in surfaces if surface.strip()]
-        text = "==SURFACE==\n" + "\n==SURFACE==\n".join(surfaces)
-        text = re.sub(r"\n+", "\n", text)
+
+        text = ("==SURFACE==\n" + "\n==SURFACE==\n".join(surfaces)) if surfaces else ""
         text = re.sub(r"\ *\n\ *", "\n", text)
+        text = re.sub(r"\n+", "\n", text)
         text = re.sub(r"\ +", " ", text)
         return text.strip()
 
@@ -111,7 +112,7 @@ def _discontinuity_to_text(node: Discontinuity) -> Optional[str]:
     if node.type_ == DiscontinuityType.LINE_START:
         return "\n"
     if node.type_ == DiscontinuityType.COLUMN:
-        return "==COLUMN=="
+        return "\n==COLUMN==\n"
     if node.type_ == DiscontinuityType.SURFACE:
         return "==SURFACE=="
 
