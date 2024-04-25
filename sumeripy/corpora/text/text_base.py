@@ -135,18 +135,17 @@ def _extract_text_from_node(node: CDLNode) -> Optional[str]:
         return _discontinuity_to_text(node)
     if type(node) == Lemma:
         text = node.frag
-        if node.inst == "n":
-            gdl = node.f.get("gdl", [])[0]
-            # This is not the most precise, but it'll do...
-            # Otherwise, we end up with unbalanced brackets
-            # and there's not an easy way around that without potentially
-            # introducing many more bugs.
-            if any("breakStart" in node for node in gdl):
-                if "[" not in text:
-                    text = f"[{text}"
-            if any("breakEnd" in node for node in gdl):
-                if "]" not in text:
-                    text = f"{text}]"
+        gdl = node.f.get("gdl", [])[0]
+        # This is not the most precise, but it'll do...
+        # Otherwise, we end up with unbalanced brackets
+        # and there's not an easy way around that without potentially
+        # introducing many more bugs.
+        if any("breakStart" in node for node in gdl):
+            if "[" not in text:
+                text = f"[{text}"
+        if any("breakEnd" in node for node in gdl):
+            if "]" not in text:
+                text = f"{text}]"
         return text
 
     return None
