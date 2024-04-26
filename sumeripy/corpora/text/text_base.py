@@ -134,7 +134,7 @@ def _extract_text_from_node(node: CDLNode) -> Optional[str]:
     if type(node) == Discontinuity:
         return _discontinuity_to_text(node)
     if type(node) == Lemma:
-        text = node.frag
+        text = node.frag if node.frag else node.f.get("form", "")
         gdl = node.f.get("gdl", [])
         # This is not the most precise, but it'll do...
         # Otherwise, we end up with unbalanced brackets
